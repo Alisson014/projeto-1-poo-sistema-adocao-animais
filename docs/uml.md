@@ -4,6 +4,8 @@ Aqui estão descritas as classes iniciais pensadas para o projeto, juntamente co
 
 Esta descrição é apenas um ponto de partida para o desenvolvimento do projeto, não necessariamente se manterá inauterada até o fim do desenvolvimento.
 
+[Click para voltar ao readme](../README.md#-classes-planejadas)
+
 ### Sumário:
 * [Animais](#animais);
 * [Pessoas](#pessoa);
@@ -249,6 +251,7 @@ classDiagram
     %% Relacionamentos
     Relatorio <|-- Top5MaisAdotaveis : Herança (é um)
     Relatorio <|-- TaxaAdocaoEspecies : Herança (é um)
+    Relatorio <|-- TaxaAdocaoPorte : Herança (é um)
     Relatorio <|-- TaxaTempoMedioEntradaAdocao : Herança (é um)
     Relatorio <|-- TaxaDevolucoes : Herança (é um)
 ```
