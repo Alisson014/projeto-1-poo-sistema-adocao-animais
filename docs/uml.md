@@ -49,7 +49,7 @@ classDiagram
     }
 
     class AdestravelMixin {
-        + adestrado: bool;
+        + nivel_adestramento: int;
         + adestrar() -> None;
     }
 
@@ -128,13 +128,14 @@ classDiagram
 classDiagram
     %% Classes
     class EntradaFila {
-        + adotante: (id) Adotante;
-        + timestamp_entrada: datetime;
+        + adotante: id - Adotante;
+        + tempo_espera: datetime;
         + compatibilidade: float;
+        + atualizar_tempo_espera() -> None;
     }
 
     class FilaEspera {
-        + animal: (id) Animal;
+        + animal: id - Animal;
         + fila: List[EntradaFila];
         + add() -> None;
         + remove() -> None;
@@ -153,8 +154,8 @@ classDiagram
 classDiagram
     class Registro {
         + id: int;
-        + animal: (id) Animal;
-        + adotante: (id) Adotante;
+        + animal: id - Animal;
+        + adotante: id - Adotante;
     }
 
     class Reserva {
@@ -176,7 +177,7 @@ classDiagram
     }
 
     class Devolucao {
-        + motivo: COMPORTAMENTO, PESSOAL, DOENCA;
+        + motivo: COMPORTAMENTO, PESSOAL, DOENCA, OUTRO;
         + data: date;
     }
 
@@ -195,7 +196,7 @@ classDiagram
 ```mermaid
 classDiagram
     class Quarentena {
-        + animal: (id) Animal;
+        + animal: id - Animal;
         + data_inicial: date;
         + data_final: null | date;
         + motivo: COMPORTAMENTO, DOENCA;
@@ -245,6 +246,7 @@ classDiagram
     class TaxaDevolucoes {
         + data_inicial: date;
         + data_final: date;
+        + adocoes: List[Adocao];
         + devolucoes: List[Devolucao];
     }
 
@@ -272,7 +274,7 @@ classDiagram
     }
 
     class IdadeMinima {
-        idade_minima: int;
+        + idade_minima: int;
     }
 
     class PorteXArea {
@@ -308,14 +310,14 @@ classDiagram
 ```mermaid
 classDiagram
     class Evento {
-        tipo: VACINA, ADOCAO, DEVOLUCAO, QUARENTENA, CONSULTA;
-        descricao: string;
-        data: date;
+        + tipo: VACINA, ADOCAO, DEVOLUCAO, QUARENTENA, CONSULTA;
+        + descricao: string;
+        + data: date;
     }
 
     class Vacina {
-        nome: string;
-        data: date;
+        + nome: string;
+        + data: date;
     }
 
 ```
