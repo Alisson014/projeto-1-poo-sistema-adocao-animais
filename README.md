@@ -68,10 +68,23 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  ├── 📂 src
  |    ├── 📂 api
  |    ├── 📂 config
+ |    |    ├── __init__.py 
  |    |    ├── settings.py 
  |    ├── 📂 domain
  |    |    ├── 📂 mixins
+ |    |    |    ├── __init__.py
+ |    |    |    ├── adestravel.py
+ |    |    |    ├── vacinavel.py
  |    |    ├── 📂 models
+ |    |    |    ├── __init__.py
+ |    |    |    ├── animal.py
+ |    |    |    ├── auxiliares.py
+ |    |    |    ├── fila_espera.py
+ |    |    |    ├── pessoa.py
+ |    |    |    ├── quarentena.py
+ |    |    |    ├── registro.py
+ |    |    |    ├── relatorio.py
+ |    |    ├── __init__.py
  |    |    ├── enums.py
  |    |    ├── exceptions.py
  |    ├── 📂 repositories
@@ -79,6 +92,15 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  |    ├── 📂 strategies
  ├── 📂 tests
  |    ├── conftest.py
+ |    ├── 📂 domain
+ |    |    ├── 📂 models
+ |    |    |    ├── animal_test.py
+ |    |    |    ├── auxiliares_test.py
+ |    |    |    ├── fila_espera_test.py
+ |    |    |    ├── pessoa_test.py
+ |    |    |    ├── quarentena_test.py
+ |    |    |    ├── registro_test.py
+ |    |    |    ├── relatorio_test.py
  ├── .gitignore
  ├── main.py  
  ├── README.md
@@ -182,8 +204,14 @@ Será documentado posteriormente
 <br>
 
 ## 🧩 Cobertura dos testes:
+```text
+A estrutura de pastas dos testes segue a estrutura de src
 ```
-Será documentado posteriormente
-```
+Testes unitários visando questões chave como criação de instâncias (casos de sucesso e falha) e reatividade à mudanças de propriedades. Também devem ser verificadas as exceções lançados em casos de verificação de falha.
+
+Contagem de testes atual: `48`
+
+### Em resumo:
+- `Testes unitários`, `casos de sucesso (intancia)`, `casos de falha (instancia)`, `reaatividade à mudanças`
 
 
