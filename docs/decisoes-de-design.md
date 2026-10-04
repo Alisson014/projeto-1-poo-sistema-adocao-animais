@@ -90,3 +90,25 @@ Popular os arquivos `requirements.txt` e `requirements-dev.txt` com as dependên
 ---
 
 <br>
+
+## 6. Os parametros dos métodos `__init__()` devem ser todos nomeados
+
+### Motivo:
+Organização de código e evitar erros de ordenação devido ao grande número de atributos de algumas classes
+
+### Implicações:
+Todas as criações de instâncias de classes (ou super().__init()) deverão nomear os parâmetros do contrutor
+
+```python
+# Exemplo:
+class Exemplo:
+    def __init__(self, *, param1, parmam_n):
+        pass
+
+
+ex = Exemplo(param1="valor", param_n="valor")
+```
+
+---
+
+<br>
