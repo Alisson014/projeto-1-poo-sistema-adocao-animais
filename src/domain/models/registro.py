@@ -78,6 +78,12 @@ class Reserva(Registro):
         except ValueError:
             raise TipagemError("StatusReserva", status)
 
+    def __str__(self) -> str:
+        return f"Reserva de {type(self.animal).__name__} {self.animal.nome} por {self.adotante.nome} em {self.data_inicial.day}/{self.data_inicial.month}/{self.data_inicial.year}"
+
+    def __repr__(self) -> str:
+        return f"Adocao(id={self.id}, animal={repr(self.animal)}, adotante={repr(self.adotante)}, data_inicial={self.data_inicial}, data_expiracao={self.data_expiracao}, status={self.status}, compatibilidade={self.compatibilidade})"
+
 
 class Adocao(Registro):
     """Classe para modelar adoções no sistema
@@ -121,6 +127,11 @@ class Adocao(Registro):
     def registrar_pagamento(self) -> None:
         self.pago = True
 
+    def __str__(self) -> str:
+        return f"Adocao de {type(self.animal).__name__} {self.animal.nome} por {self.adotante.nome} em {self.data.day}/{self.data.month}/{self.data.year}"
+
+    def __repr__(self) -> str:
+        return f"Adocao(id={self.id}, animal={repr(self.animal)}, adotante={repr(self.adotante)}, taxa={self.taxa}, pago={self.pago}, data={self.data})"
 
 class Devolucao(Registro):
     """Classe para modelar devoluções no sistema
@@ -157,3 +168,9 @@ class Devolucao(Registro):
                 self.__motivo = MotivoDevolucao(motivo)
         except ValueError:
             raise TipagemError("MotivoDevolucao", motivo)
+
+    def __str__(self) -> str:
+        return f"Devolução de {type(self.animal).__name__} {self.animal.nome} por {self.adotante.nome} em {self.data.day}/{self.data.month}/{self.data.year} por motivo de {self.motivo}"
+
+    def __repr__(self) -> str:
+        return f"Adocao(id={self.id}, animal={repr(self.animal)}, adotante={repr(self.adotante)}, motivo={self.motivo}, data={self.data})"

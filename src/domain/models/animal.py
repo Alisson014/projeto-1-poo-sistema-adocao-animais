@@ -279,6 +279,18 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
         self.raca: str = raca
         self.passeios_necessarios_dia: int = passeios_necessarios_dia
 
+    def __str__(self) -> str:
+        return f"Cachorro {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
+
+    def __repr__(self) -> str:
+        string = "Cachorro("
+        for key, value in vars(self).items():
+            string += f"{key}={value}, "
+        string.rstrip()
+        string += ")"
+
+        return string
+
 
 class Calopsita(Animal, AdestravelMixin):
     """Classe que modela calopsitas no sistema
@@ -333,6 +345,16 @@ class Calopsita(Animal, AdestravelMixin):
     def ensinar_a_cantar(self):
         self.__canta = True
 
+    def __str__(self) -> str:
+        return f"Calopsita {self.nome} {self.sexo}. É {self.energia} e está {self.status}"
+
+    def __repr__(self) -> str:
+        string = "Calopsita("
+        for key, value in vars(self).items():
+            string += f"{key}={value}, "
+        string.rstrip()
+        string += ")"
+        return string
 
 class Coelho(Animal, AdestravelMixin, VacinavelMixin):
     """Classe para modelar coelhos no sistema
@@ -395,6 +417,18 @@ class Coelho(Animal, AdestravelMixin, VacinavelMixin):
             raise ValorForaDoIntervaloError("tamanho_gaiola_m3", tamanho_gaiola_m3)
         self.__tamanho_gaiola_m3 = tamanho_gaiola_m3
 
+    def __str__(self) -> str:
+        return f"Coelho {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
+
+    def __repr__(self) -> str:
+        string = "Coelho("
+        for key, value in vars(self).items():
+            string += f"{key}={value}, "
+        string.rstrip()
+        string += ")"
+        return string
+
+
 
 class Gato(Animal, AdestravelMixin, VacinavelMixin):
     """Classe para modelar gatos no sistema
@@ -446,3 +480,14 @@ class Gato(Animal, AdestravelMixin, VacinavelMixin):
         VacinavelMixin.__init__(self, vacinas=vacinas)
         self.raca: str = raca
         self.independencia: bool = independencia
+
+    def __str__(self) -> str:
+            return f"Gato {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
+    
+    def __repr__(self) -> str:
+        string = "Gato("
+        for key, value in vars(self).items():
+            string += f"{key}={value}, "
+        string.rstrip()
+        string += ")"
+        return string

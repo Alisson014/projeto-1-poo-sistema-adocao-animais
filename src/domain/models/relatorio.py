@@ -89,6 +89,9 @@ class Top5MaisAdotaveis(Relatorio):
             "top5": self.__top5,
         }
 
+    def __str__(self) -> str:
+        return f"Relatório dos 5 animais mais adotáveis"
+
 
 class TaxaAdocaoEspecies(Relatorio):
     """Classe para modelar os relatórios com as taxas de adoção por Animais.
@@ -142,6 +145,9 @@ class TaxaAdocaoEspecies(Relatorio):
             "taxas": self.__taxas,
         }
 
+    def __str__(self) -> str:
+        return f"Relatório da Taxa de Adoção por espécies"
+
 
 class TaxaAdocaoPorte(Relatorio):
     """Classe para modelar os relatórios com as taxas de adoção por portes.
@@ -185,6 +191,8 @@ class TaxaAdocaoPorte(Relatorio):
             "taxas": self.__taxas,
         }
 
+    def __str__(self) -> str:
+        return f"Relatório da taxa de adoção por portes"
 
 class TaxaTempoMedioEntradaAdocao(Relatorio):
     """Classe para modelar os relatórios com o tempo médio entre entrada e adoção.
@@ -225,6 +233,8 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
             "tempo_medio_meses": self.__tempo_media_meses,
         }
 
+    def __str__(self) -> str:
+        return f"Relatório do tempo médio entre entrada e adoção"
 
 class TaxaDevolucoes(Relatorio):
     """Classe para modelar os relatórios com a taxa entre adoções e devoluções;
@@ -267,3 +277,6 @@ class TaxaDevolucoes(Relatorio):
             "devolucoes": get_dict_list(self.devolucoes),
             "taxa": self.__taxa,
         }
+
+    def __str__(self) -> str:
+        return f"Relatório da taxa de devoluções"

@@ -33,6 +33,12 @@ class Evento:
         except ValueError:
             raise TipagemError("TipoEvento", tipo)
 
+    def __str__(self) -> str:
+        return f"Evento de {self.tipo}, {self.data} {self.descricao}"
+
+    def __repr__(self) -> str:
+        return f"Evento(tipo={self.tipo}, descricao={self.descricao})"
+
 
 class Vacina:
     """Classe para modelar vacinas.
@@ -48,3 +54,9 @@ class Vacina:
     def __init__(self, *, nome: str, data: datetime):
         self.nome: str = nome
         self.data: datetime = data
+
+    def __str__(self) -> str:
+        return f"Vacina {self.nome} aplicada em {self.data.day}/{self.data.month}/{self.data.year}"
+
+    def __repr__(self) -> str:
+        return f"Vacina(nome={self.nome}, data={self.data})"

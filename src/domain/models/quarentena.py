@@ -62,3 +62,9 @@ class Quarentena:
                 self.__status = StatusQuarentena(status)
         except ValueError:
             raise TipagemError("StatusQuarentena", status)
+
+    def __str__(self) -> str:
+        return f"Quarentena do animal {self.animal} iniciada em {self.data_inicial.day}/{self.data_inicial.month}{self.data_inicial.year}, por {self.motivo}. Está {self.status}"
+
+    def __repr__(self) -> str:
+        return f"Quarentena(animal={self.animal}, data_inicial={self.data_inicial}, data_final={self.data_final}, motivo={self.motivo}, status={self.status})"

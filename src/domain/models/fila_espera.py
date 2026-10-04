@@ -29,6 +29,11 @@ class EntradaFila:
     def compatibilidade(self):
         return self.__compatibilidade
 
+    def __str__(self) -> str:
+        return f"Entrada para espera de {self.adotante["nome"]}, tempo de espera de {self.tempo_espera} e compatibilidade({self.compatibilidade})"
+
+    def __repr__(self) -> str:
+        return f"EntradaFila(adotante={self.adotante}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
 
 class FilaEspera:
     """Classe para modelar filas de espera no sistema
@@ -94,3 +99,9 @@ class FilaEspera:
             res.append(en.__dict__)
 
         return res
+
+    def __str__(self) -> str:
+        return f"Fila de Espera do animal {self.animal}"
+
+    def __repr__(self) -> str:
+        return f"FilaEspera(animal={self.animal}, fila={self.__fila})"
