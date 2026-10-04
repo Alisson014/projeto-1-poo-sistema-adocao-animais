@@ -37,15 +37,18 @@ classDiagram
         + historico: List[Evento];
         + temperamento: List[ARISCO, DÓCIL, MEDROSO];
         + cuidado_especial: bool;
-        + adicionar_evento() -> None;
+        + envelhecer() -> None;
+        + adicionar_evento(evento: Evento) -> None;
+        + remover_evento(evento: Evento) -> None;
         + atualizar_status() -> None;
-        + _validar_transicao_status() -> bool;
-        + get_historico() -> string;
+        - __valida_transicao_status() -> bool;
+        + get_historico() -> List[dict];
     }
 
     class VacinavelMixin {
         + vacinas: List[Vacina];
         + vacinar() -> None;
+        + get_vacinas() -> list[dict]
     }
 
     class AdestravelMixin {
@@ -65,7 +68,7 @@ classDiagram
     
     class Coelho {
         + raca: string;
-        + tamanho_gaiola_cm2: float;
+        + tamanho_gaiola_m3: float;
     }
 
     class Calopsita {
@@ -89,6 +92,7 @@ classDiagram
     Animal <|-- Calopsita : Herança (é um)
     AdestravelMixin <|-- Calopsita : Herança (mixin)
 ```
+
 <br>
 <br>
 
@@ -102,7 +106,6 @@ classDiagram
         + nome: string;
         - email: string;
         + idade: int;
-        + get_email() -> string;
     }
 
     class Adotante {
@@ -128,20 +131,20 @@ classDiagram
 classDiagram
     %% Classes
     class EntradaFila {
-        + adotante: id - Adotante;
-        + tempo_espera: datetime;
+        + adotante: dict;
+        + tempo_espera: int;
         + compatibilidade: float;
-        + atualizar_tempo_espera() -> None;
     }
 
     class FilaEspera {
-        + animal: id - Animal;
+        + animal: int;
         + fila: List[EntradaFila];
-        + add() -> None;
-        + remove() -> None;
-        + proximo() -> Adotante;
+        + add(adotante: Adotante) -> None;
+        + remove(adotante: Adotante) -> None;
+        + proximo() -> EntradaFila;
+        + get_fila() -> list[dict];
     }
-```
+```    
 
 <br>
 <br>
@@ -154,31 +157,29 @@ classDiagram
 classDiagram
     class Registro {
         + id: int;
-        + animal: id - Animal;
-        + adotante: id - Adotante;
+        + animal: Animal;
+        + adotante: Adotante;
     }
 
     class Reserva {
-        + data_inicial: date;
-        + data_expiracao: date;
+        + data_inicial: datetime;
+        + data_expiracao: datetime;
         + status: ATIVA, CANCELADA, EXPIRADA;
         + compatibilidade: float;
-        + confirmar();
-        + expirar();
-        + cancelar();
     }
 
     class Adocao {
         + taxa: float;
         + pago: bool;
-        + data: date;
-        + gerar_contrato() -> String;
-        + registrar_pagamento() -> void;
+        + data: datetime;
+        + calcular_taxa() -> None;
+        + gerar_contrato() -> str;
+        + registrar_pagamento() -> None;
     }
 
     class Devolucao {
         + motivo: COMPORTAMENTO, PESSOAL, DOENCA, OUTRO;
-        + data: date;
+        + data: datetime;
     }
 
     %% Relacionamentos:
@@ -196,12 +197,11 @@ classDiagram
 ```mermaid
 classDiagram
     class Quarentena {
-        + animal: id - Animal;
-        + data_inicial: date;
-        + data_final: null | date;
-        + motivo: COMPORTAMENTO, DOENCA;
+        + animal: int;
+        + data_inicial: datetime;
+        + data_final: null | datetime;
+        + motivo: COMPORTAMENTO, DOENCA, OUTRO;
         + status: ATIVA, CUMPRIDA;
-        + atualizar_status(novo_status: Enum) -> None;
     }
 ```
 
@@ -215,16 +215,16 @@ classDiagram
 classDiagram
     class Relatorio {
         + id: int;
-        + data: date;
-        + nome: string;
-        + gerar() -> None;
-        + exportar() -> string;
+        + data: datetime;
+        + nome: string
+        + gerar();
+        + exportar();
     }
 
     class Top5MaisAdotaveis {
         + animais: List[Animal];
-        + Adotantes: List[Adotante];
-        + top5: List[Animal];
+        + adotantes: List[Adotante];
+        + top5: List[dict];
     }
 
     class TaxaAdocaoEspecies {
@@ -238,16 +238,14 @@ classDiagram
     }
 
     class TaxaTempoMedioEntradaAdocao {
-        + animais: List[Animal];
         + adocoes: List[Adocao];
-        + tempo_medio_dias: int;
+        + tempo_medio_meses: int;
     }
 
     class TaxaDevolucoes {
-        + data_inicial: date;
-        + data_final: date;
         + adocoes: List[Adocao];
         + devolucoes: List[Devolucao];
+        + taxa: string
     }
 
     %% Relacionamentos
@@ -269,18 +267,20 @@ classDiagram
     %% Classes:
     class Politica {
         + nome: string;
-        + data_modificacao: date;
-        + validar(**kwars) -> bool; 
+        + data_modificacao: datetime;
+        + validar() -> bool;
     }
 
     class IdadeMinima {
         + idade_minima: int;
+        + validar(idade) -> bool;
     }
 
     class PorteXArea {
         + porte_p_min: float;
         + porte_m_min: float;
         + porte_g_min: float;
+        + validar(porte, area) -> bool;
     }
 
     class DuracaoReserva {
@@ -312,12 +312,11 @@ classDiagram
     class Evento {
         + tipo: VACINA, ADOCAO, DEVOLUCAO, QUARENTENA, CONSULTA;
         + descricao: string;
-        + data: date;
+        + data: datetime;
     }
 
     class Vacina {
         + nome: string;
-        + data: date;
+        + data: datetime;
     }
-
 ```
