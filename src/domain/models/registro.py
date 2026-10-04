@@ -1,3 +1,10 @@
+from src.domain.enums import StatusReserva, MotivoDevolucao
+from src.domain.models.animal import Animal
+from src.domain.models.pessoa import Adotante
+from src.domain.exceptions import TipagemError
+
+from datetime import datetime
+
 
 class Registro:
     """Classe abstrata para modelar registros no sistema
@@ -7,14 +14,30 @@ class Registro:
 
     Attributes:
         id (int): Id único de identificação do registro.
-        animal (id - Animal): Id de identificação do animal envolvido.
-        adotante (id - Adotante): Id de identificação do adotante envolvido.
+        animal Animal: Animal envolvido.
+        adotante Adotante: Adotante envolvido.
     """
-    pass
+
+    def __init__(self, *, id: int, animal: Animal, adotante: Adotante):
+        self.__id: int = id  # Apenas acessado, nunca alterado
+        self.__animal: Animal = animal  # Apenas acessado, nunca alterado
+        self.__adotante: Adotante = adotante  # Apenas acessado, nunca alterado
+
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    @property
+    def animal(self) -> Animal:
+        return self.__animal
+
+    @property
+    def adotante(self) -> Adotante:
+        return self.__adotante
 
 
 class Reserva(Registro):
-    """ Classe para modelar reservas no sistema
+    """Classe para modelar reservas no sistema
 
     A classe herda atributos de Registro e também possui os próprios
     atributos.
@@ -25,11 +48,39 @@ class Reserva(Registro):
         status (ATIVA, CANCELADA, EXPIRADA): Status da reserva.
         compatibilidade (float): Compatibilidade entre os Animal e contratante envolvidos.
     """
-    pass
+
+    def __init__(
+        self,
+        *,
+        id: int,
+        animal: Animal,
+        adotante: Adotante,
+        data_inicial: datetime,
+        data_expiracao: datetime,
+        status: str,
+        compatibilidade: float,
+    ):
+        super().__init__(id=id, animal=animal, adotante=adotante)
+        self.data_inicial: datetime = data_inicial
+        self.data_expiracao: datetime = data_expiracao
+        self.status: StatusReserva = status  # property setter (privado)
+        self.compatibilidade: float = compatibilidade
+
+    @property
+    def status(self) -> str:
+        return self.__status.value
+
+    @status.setter
+    def status(self, status: str) -> None:
+        try:
+            if isinstance(StatusReserva(status), StatusReserva):
+                self.__status = StatusReserva(status)
+        except ValueError:
+            raise TipagemError("StatusReserva", status)
 
 
 class Adocao(Registro):
-    """ Classe para modelar adoções no sistema
+    """Classe para modelar adoções no sistema
 
     A classe herda atributos de Registro e também possui os próprios
     atributos.
@@ -39,11 +90,40 @@ class Adocao(Registro):
         pago (bool): Indica se a taxa foi paga ou não.
         data (date): Data da adoção.
     """
-    pass
+
+    def __init__(
+        self,
+        *,
+        id: int,
+        animal: Animal,
+        adotante: Adotante,
+        taxa: float,
+        pago: bool,
+        data: datetime,
+    ):
+        super().__init__(id=id, animal=animal, adotante=adotante)
+        self.__taxa: float = taxa  # Pode apenas ser lido
+        self.pago: bool = pago
+        self.data: datetime = data
+
+    @property
+    def taxa(self) -> float:
+        return self.__taxa
+
+    def calcular_taxa(self):
+        """Método para calcular a taxa de uma adoção"""
+        #### Precisa de métricas de políticas para ser implementado
+
+    def gerar_contrato(self) -> str:
+        """Retorna o contrato da adoção"""
+        return f"Adoção realizada em {self.data.day}/{self.data.month}/{self.data.year}\nValor da taxa:R$ {self.__taxa:.2f}\nPago: {'Sim' if self.pago else 'Não'}"
+
+    def registrar_pagamento(self) -> None:
+        self.pago = True
 
 
 class Devolucao(Registro):
-    """ Classe para modelar devoluções no sistema
+    """Classe para modelar devoluções no sistema
 
     A classe herda atributos de Registro e também possui os próprios
     atributos.
@@ -52,4 +132,28 @@ class Devolucao(Registro):
         motivo (COMPORTAMENTO, PESSOAL, DOENCA, OUTRO): Tipo do motivo
         data (date): Data da devolução.
     """
-    pass
+
+    def __init__(
+        self,
+        *,
+        id: int,
+        animal: Animal,
+        adotante: Adotante,
+        motivo: str,
+        data: datetime,
+    ):
+        super().__init__(id=id, animal=animal, adotante=adotante)
+        self.motivo: MotivoDevolucao = motivo  # property setter (privado)
+        self.data: datetime = data
+
+    @property
+    def motivo(self) -> str:
+        return self.__motivo.value
+
+    @motivo.setter
+    def motivo(self, motivo: str) -> None:
+        try:
+            if isinstance(MotivoDevolucao(motivo), MotivoDevolucao):
+                self.__motivo = MotivoDevolucao(motivo)
+        except ValueError:
+            raise TipagemError("MotivoDevolucao", motivo)
