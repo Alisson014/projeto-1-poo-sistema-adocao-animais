@@ -134,3 +134,16 @@ class Adotante(Pessoa):
             raise ValorForaDoIntervaloError("area_util", area_util)
 
         self.__area_util = area_util
+
+    def __str__(self) -> str:
+        return f"Adotante {self.nome}, {self.idade} anos e tem o email {self.email}"
+
+    def __repr__(self) -> str:
+        string = "Adotante("
+
+        for key, value in vars(self).items():
+            string += f"{key}={value}, "
+
+        string.rstrip()
+        string += ")"
+        return string
