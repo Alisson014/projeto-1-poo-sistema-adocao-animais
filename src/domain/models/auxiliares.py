@@ -41,7 +41,10 @@ class Evento:
         return f"Evento de {self.tipo}, {self.data} {self.descricao}"
 
     def __repr__(self) -> str:
-        return f"Evento(tipo={self.tipo}, descricao={self.descricao})"
+        return f"Evento(tipo={self.tipo}, data={self.data} descricao={self.descricao})"
+
+    def __eq__(self, outro_evento) -> bool:
+        return repr(self) == repr(outro_evento)
 
 
 class Vacina:
@@ -64,3 +67,6 @@ class Vacina:
 
     def __repr__(self) -> str:
         return f"Vacina(nome={self.nome}, data={self.data})"
+
+    def __eq__(self, outro_evento) -> bool:
+        return repr(self) == repr(outro_evento)

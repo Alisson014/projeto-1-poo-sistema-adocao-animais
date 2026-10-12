@@ -344,6 +344,13 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
 
         return string
 
+    def __eq__(self, outro_animal:Animal) -> bool:
+        return self.id == outro_animal.id
+
+    def __lt__(self, outro_animal:Animal) -> bool:
+        """Utilizado para verificar se um animal é mais novo que outro"""
+        return self.idade_meses < outro_animal.idade_meses
+
 
 class Calopsita(Animal, AdestravelMixin):
     """Classe que modela calopsitas no sistema
@@ -411,6 +418,13 @@ class Calopsita(Animal, AdestravelMixin):
         string.rstrip()
         string += ")"
         return string
+
+    def __eq__(self, outro_animal:Animal) -> bool:
+            return self.id == outro_animal.id
+    
+    def __lt__(self, outro_animal:Animal) -> bool:
+        """Utilizado para verificar se um animal é mais novo que outro"""
+        return self.idade_meses < outro_animal.idade_meses
 
 class Coelho(Animal, AdestravelMixin, VacinavelMixin):
     """Classe para modelar coelhos no sistema
@@ -488,6 +502,12 @@ class Coelho(Animal, AdestravelMixin, VacinavelMixin):
         string += ")"
         return string
 
+    def __eq__(self, outro_animal:Animal) -> bool:
+        return self.id == outro_animal.id
+
+    def __lt__(self, outro_animal:Animal) -> bool:
+        """Utilizado para verificar se um animal é mais novo que outro"""
+        return self.idade_meses < outro_animal.idade_meses
 
 
 class Gato(Animal, AdestravelMixin, VacinavelMixin):
@@ -553,3 +573,10 @@ class Gato(Animal, AdestravelMixin, VacinavelMixin):
         string.rstrip()
         string += ")"
         return string
+
+    def __eq__(self, outro_animal:Animal) -> bool:
+        return self.id == outro_animal.id
+
+    def __lt__(self, outro_animal:Animal) -> bool:
+        """Utilizado para verificar se um animal é mais novo que outro"""
+        return self.idade_meses < outro_animal.idade_meses

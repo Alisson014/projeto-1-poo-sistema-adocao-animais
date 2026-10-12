@@ -36,6 +36,12 @@ class EntradaFila:
     def __repr__(self) -> str:
         return f"EntradaFila(adotante={self.adotante}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
 
+    def __eq__(self, outra_entrada) -> bool:
+        return repr(self) == repr(outra_entrada)
+
+    def __lt__(self, outra_entrada) -> bool:
+        return self.compatibilidade < outra_entrada.compatibilidade
+
 class FilaEspera:
     """Classe para modelar filas de espera no sistema
 
@@ -117,3 +123,17 @@ class FilaEspera:
 
     def __repr__(self) -> str:
         return f"FilaEspera(animal={self.animal}, fila={self.__fila})"
+
+    def __len__(self) -> int:
+        return len(self.__fila)
+
+    def __contains__(self, item) -> bool:
+        for i in self.__fila:
+            # Compara via __eq__ de EntradaFila
+            if i == item:
+                return True
+
+        return False
+
+    def __lt__(self, outra_fila) -> bool:
+        return len(self) < len(outra_fila)
