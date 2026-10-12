@@ -35,6 +35,9 @@ class Registro:
     def adotante(self) -> Adotante:
         return self.__adotante
 
+    def __eq__(self, outro_registro):
+        return self.id == outro_registro.id
+
 
 class Reserva(Registro):
     """Classe para modelar reservas no sistema
