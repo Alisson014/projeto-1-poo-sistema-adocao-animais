@@ -23,12 +23,14 @@ class Pessoa:
         self.email: str = email  # property setter (privado)
         self.idade: int = idade  # property setter (privado)
 
+    # __email possui getter e setter para ganrantir validação
     @property
     def email(self) -> str:
         return self.__email
 
     @email.setter
     def email(self, email: str) -> None:
+        # Validação do email com regras mínimas
         if (
             (not "@" in email)
             or (not "." in email[email.index("@") + 1 :])
@@ -38,6 +40,7 @@ class Pessoa:
             raise EmailInvalidoError(email)
         self.__email = email
 
+    # __idade possui getter e setter para garantir validação
     @property
     def idade(self) -> int:
         return self.__idade
@@ -93,6 +96,8 @@ class Adotante(Pessoa):
     @moradia.setter
     def moradia(self, moradia: str) -> None:
         try:
+            # Valida se a moradia é válida
+            # Um erro é disparado se não for a o atributo não é alterado
             if isinstance(Moradia(moradia), Moradia):
                 self.__moradia = Moradia(moradia)
         except ValueError:
@@ -106,6 +111,8 @@ class Adotante(Pessoa):
     @experiencia.setter
     def experiencia(self, experiencia: str) -> None:
         try:
+            # Valida se a experiência é válida
+            # Um erro é disparado se não for a o atributo não é alterado
             if isinstance(Experiencia(experiencia), Experiencia):
                 self.__experiencia = Experiencia(experiencia)
         except ValueError:
@@ -140,10 +147,10 @@ class Adotante(Pessoa):
 
     def __repr__(self) -> str:
         string = "Adotante("
-
+        # Itera sobre os atributos de self e adiciona todos programáticamente
         for key, value in vars(self).items():
             string += f"{key}={value}, "
-
+        # Elimina o espaço do último atributo
         string.rstrip()
         string += ")"
         return string

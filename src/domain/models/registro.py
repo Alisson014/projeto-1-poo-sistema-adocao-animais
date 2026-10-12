@@ -66,6 +66,7 @@ class Reserva(Registro):
         self.status: StatusReserva = status  # property setter (privado)
         self.compatibilidade: float = compatibilidade
 
+    # __status possui getter e setter para garantir validação da tipagem
     @property
     def status(self) -> str:
         return self.__status.value
@@ -73,6 +74,8 @@ class Reserva(Registro):
     @status.setter
     def status(self, status: str) -> None:
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o atributo seja alterado
             if isinstance(StatusReserva(status), StatusReserva):
                 self.__status = StatusReserva(status)
         except ValueError:
@@ -157,6 +160,7 @@ class Devolucao(Registro):
         self.motivo: MotivoDevolucao = motivo  # property setter (privado)
         self.data: datetime = data
 
+    # __motivo possui getter e setter para garantir validação da tipagem
     @property
     def motivo(self) -> str:
         return self.__motivo.value
@@ -164,6 +168,8 @@ class Devolucao(Registro):
     @motivo.setter
     def motivo(self, motivo: str) -> None:
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o atributo seja alterado
             if isinstance(MotivoDevolucao(motivo), MotivoDevolucao):
                 self.__motivo = MotivoDevolucao(motivo)
         except ValueError:

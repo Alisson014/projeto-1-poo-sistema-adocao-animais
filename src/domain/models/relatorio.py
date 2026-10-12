@@ -82,6 +82,7 @@ class Top5MaisAdotaveis(Relatorio):
         if not self.__top5:
             raise RelatorioNaoGeradoError()
 
+        # Retorna um dicionário com as informações
         return {
             "nome": self.nome,
             "animais": get_dict_list(self.animais),
@@ -112,17 +113,22 @@ class TaxaAdocaoEspecies(Relatorio):
     def gerar(self):
         """Gere um dicionário que armazena os pares de chave e valor {"Animal": "adotados/Total"}
         referentes as taxas de adoção de cada Animal no sistema"""
+
+        # Dicionário para mapear a quantidade de cada animal
         totais = {
             type(Cachorro).__name__: 0,
             type(Calopsita).__name__: 0,
             type(Coelho).__name__: 0,
             type(Gato).__name__: 0,
         }
+
+        # Contagem via tipagem dos animais na lista
         for a in self.adocoes:
             totais[type(a.animal).__name__] += 1
 
         total_adocoes = len(self.adocoes)
 
+        # Armazenando os dados no atributo
         self.__taxas = {
             type(
                 Cachorro
@@ -168,7 +174,10 @@ class TaxaAdocaoPorte(Relatorio):
     def gerar(self):
         """Gere um dicionário que armazena os pares de chave e valor {"Animal": "adotados/Total"}
         referentes as taxas de adoção de cada Animal no sistema"""
+        # Dicionário para mapear os portes e suas quantidades
         totais = {Porte.P.value: 0, Porte.M.value: 0, Porte.G.value: 0}
+
+        # Contagem via porte do animal na lista
         for a in self.adocoes:
             totais[a.animal.porte] += 1
 
@@ -212,6 +221,7 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
 
     def gerar(self):
         """Gera o tempo média entre entrada e adoção dos adotados"""
+        # Armazena a soma dos tempos entre a entrada e a adoção
         soma = 0
         for a in self.adocoes:
             soma += (a.data.year - a.animal.data_entrada.year) * 12 + (
@@ -220,6 +230,7 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
             if a.data.day < a.animal.data_entrada.day:
                 soma -= 1
 
+        # Divide pela quantidade para obter o tempo médio
         self.__tempo_media_meses = soma / len(self.adocoes)
 
     def exportar(self):

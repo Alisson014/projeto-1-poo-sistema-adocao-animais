@@ -18,14 +18,17 @@ class VacinavelMixin:
     def vacinar(self, vacina: Vacina) -> None:
         """Adiciona uma vacina à agenda"""
         if not isinstance(vacina, Vacina):
+            # Garante que uma vacina válida foi passada como parâmetro
             raise TipagemError("Vacina", vacina)
 
+        # Adiciona à lista de vacinas
         self.vacinas.append(vacina)
 
     def get_vacinas(self) -> list[dict]:
         """Retorna uma lista de dicionários com as vacinas"""
         res = []
         for v in self.vacinas:
+            # Converte cada vacina em um dicionário e adiciona na lista que será retornada
             res.append(v.__dict__)
 
         return res
