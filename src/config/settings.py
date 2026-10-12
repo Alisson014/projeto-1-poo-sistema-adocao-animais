@@ -1,4 +1,5 @@
 from src.domain.enums import Porte
+from src.domain.exceptions import TipagemError
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -38,6 +39,7 @@ class IdadeMinima(Politica):
         self.idade_minima: int = idade_minima
 
     def validar(self, idade) -> bool:  # type: ignore[override]
+        """Checagem se a idade do adotantes respeita o mínimo das configurações"""
         return idade >= self.idade_minima
 
     def __str__(self):
@@ -73,12 +75,22 @@ class PorteXArea(Politica):
         self.porte_g_min: float = porte_g_min
 
     def validar(self, porte: Porte, area: float) -> bool:  # type: ignore[override]
+        """Valida se a área útil do adotande atende ao tamanho mínimo para o porte do animal"""
+
+        try:
+            # Garante que porte esteja nos tipos permitidos pelo Enum Porte
+            porte = Porte(porte)
+        except ValueError:
+            raise TipagemError("Porte", porte)
+
+        # Dicionário que mapeia os portes ao seu respectivo valor mínimo
         portes_area = {
             Porte.P.value: self.porte_p_min,
             Porte.M.value: self.porte_m_min,
             Porte.G.value: self.porte_g_min,
         }
 
+        # Retorna um booleano que indica se atende ou não
         return area >= portes_area[porte.value]
 
     def __str__(self):

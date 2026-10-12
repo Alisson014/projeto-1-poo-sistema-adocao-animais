@@ -17,14 +17,15 @@ class EntradaFila:
     def __init__(self, *, adotante: dict, tempo_espera: int, compatibilidade: float):
         self.__adotante: dict = adotante  # Pode ser apenas lido via property getter
         self.tempo_espera: int = tempo_espera
-        self.__compatibilidade: float = (
-            compatibilidade  # Pode ser apenas lido via property getter
-        )
+        # Pode ser apenas lido via property getter
+        self.__compatibilidade: float = compatibilidade  
 
+    # __adotante não pode ser alterado
     @property
     def adotante(self):
         return self.__adotante
 
+    # __compatibilidade não pode ser alterada
     @property
     def compatibilidade(self):
         return self.__compatibilidade
@@ -50,6 +51,7 @@ class FilaEspera:
         self.__animal: int = animal  # Pode ser apenas lido via getter
         self.__fila = fila
 
+    # __animal não pode ser alterado
     @property
     def animal(self):
         return self.__animal
@@ -57,9 +59,14 @@ class FilaEspera:
     # Métodos
     def add(self, adotante: Adotante) -> None:
         """Adiciona um adotante à fila de espera"""
-        if not isinstance(adotante, Adotante):
+        try:
+            # Valida a tipagem de adotante
+            # Se não for dispara um erro
+            isinstance(adotante, Adotante)
+        except ValueError:
             raise TipagemError("Adotante", adotante)
-
+            
+        # Cria a entrada e adiciona na fila
         entrada = EntradaFila(
             adotante=adotante.__dict__, tempo_espera=0, compatibilidade=100
         )
@@ -70,12 +77,16 @@ class FilaEspera:
 
     def remove(self, adotante: Adotante):
         """Remove um adotante da fila de espera"""
-        if not isinstance(adotante, Adotante):
+        try:
+            # Valida a tipagem de adotante
+            # Se não for dispara um erro
+            isinstance(adotante, Adotante)
+        except ValueError:
             raise TipagemError("Adotante", adotante)
 
         for i, e in enumerate(self.__fila):
-            print(e.adotante["_Pessoa__email"])
-            print(adotante.email)
+            # Busca o adotante comparando os emails
+            # Posso implementar isso via __eq__
             if e.adotante["_Pessoa__email"] == adotante.email:
                 self.__fila.pop(i)
                 return
@@ -84,6 +95,7 @@ class FilaEspera:
 
     def proximo(self) -> EntradaFila | None:
         """Retorna o próximo adotante na fila de espera"""
+        # Posso implementar o __len__ aqui
         if len(self.__fila) == 0:
             # Retorna None se a fila estiver vazia
             return None

@@ -21,6 +21,7 @@ class Evento:
         self.descricao: str = descricao
         self.data: datetime = data
 
+    # __tipo possui getter e setter para garantir validação da tipagem
     @property
     def tipo(self):
         return self.__tipo.value
@@ -28,7 +29,10 @@ class Evento:
     @tipo.setter
     def tipo(self, tipo: str):
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o estado seja alterado
             if isinstance(TipoEvento(tipo), TipoEvento):
+                # Valida se a string é um TipoEvento válido
                 self.__tipo = TipoEvento(tipo)
         except ValueError:
             raise TipagemError("TipoEvento", tipo)

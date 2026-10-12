@@ -45,6 +45,8 @@ class Quarentena:
     @motivo.setter
     def motivo(self, motivo: str) -> None:
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o atributo seja alterado
             if isinstance(MotivoQuarentena(motivo), MotivoQuarentena):
                 self.__motivo = MotivoQuarentena(motivo)
         except ValueError:
@@ -58,6 +60,8 @@ class Quarentena:
     @status.setter
     def status(self, status: str) -> None:
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o atributo seja alterado
             if isinstance(StatusQuarentena(status), StatusQuarentena):
                 self.__status = StatusQuarentena(status)
         except ValueError:
