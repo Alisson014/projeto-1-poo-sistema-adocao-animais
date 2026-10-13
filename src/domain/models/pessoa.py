@@ -51,7 +51,9 @@ class Pessoa:
             raise ValorForaDoIntervaloError("idade", idade)
         self.__idade: int = idade
 
-    def __eq__(self, outra_pessoa) -> bool:
+    def __eq__(self, outra_pessoa:object) -> bool:
+        if not isinstance(outra_pessoa, Pessoa):
+            return NotImplemented
         return self.email == outra_pessoa.email
 
 class Adotante(Pessoa):

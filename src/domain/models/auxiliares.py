@@ -43,7 +43,9 @@ class Evento:
     def __repr__(self) -> str:
         return f"Evento(tipo={self.tipo}, data={self.data} descricao={self.descricao})"
 
-    def __eq__(self, outro_evento) -> bool:
+    def __eq__(self, outro_evento:object) -> bool:
+        if not isinstance(outro_evento, Evento):
+            return NotImplemented
         return repr(self) == repr(outro_evento)
 
 
@@ -68,5 +70,7 @@ class Vacina:
     def __repr__(self) -> str:
         return f"Vacina(nome={self.nome}, data={self.data})"
 
-    def __eq__(self, outro_evento) -> bool:
-        return repr(self) == repr(outro_evento)
+    def __eq__(self, outra_vacina:object) -> bool:
+        if not isinstance(outra_vacina, Vacina):
+            return NotImplemented
+        return repr(self) == repr(outra_vacina)
