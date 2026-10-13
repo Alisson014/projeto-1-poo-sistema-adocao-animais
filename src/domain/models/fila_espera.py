@@ -37,10 +37,14 @@ class EntradaFila:
     def __repr__(self) -> str:
         return f"EntradaFila(adotante={repr(self.adotante)}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
 
-    def __eq__(self, outra_entrada) -> bool:
+    def __eq__(self, outra_entrada:object) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
         return repr(self) == repr(outra_entrada)
 
     def __lt__(self, outra_entrada) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
         return self.compatibilidade < outra_entrada.compatibilidade
 
 class FilaEspera:
@@ -129,6 +133,9 @@ class FilaEspera:
         return len(self.__fila)
 
     def __contains__(self, item) -> bool:
+        if not isinstance(item, EntradaFila):
+            return NotImplemented
+        
         for i in self.__fila:
             # Compara via __eq__ de EntradaFila
             if i == item:
@@ -137,4 +144,6 @@ class FilaEspera:
         return False
 
     def __lt__(self, outra_fila) -> bool:
+        if not isinstance(outra_fila, EntradaFila):
+            return NotImplemented
         return len(self) < len(outra_fila)
