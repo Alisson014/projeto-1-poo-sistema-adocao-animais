@@ -35,7 +35,9 @@ class Registro:
     def adotante(self) -> Adotante:
         return self.__adotante
 
-    def __eq__(self, outro_registro):
+    def __eq__(self, outro_registro: object):
+        if not isinstance(outro_registro, Registro):
+            return NotImplemented
         return self.id == outro_registro.id
 
 

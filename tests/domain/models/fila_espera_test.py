@@ -46,7 +46,7 @@ def test_cria_entrada_fila():
 # Testes de FilaEspera
 def test_cria_fila_espera():
     fila_espera = FilaEspera(animal=cachorro, fila=[])
-    assert fila_espera
+    assert fila_espera.__str__()
 
 
 def test_fila_espera_adiciona_entrada():

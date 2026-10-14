@@ -1,4 +1,5 @@
 from src.domain.models.pessoa import Adotante
+from src.domain.models.animal import Animal
 from src.domain.exceptions import TipagemError, NaoEncontradoError
 
 
@@ -9,13 +10,13 @@ class EntradaFila:
     fina de espera de um animal. Será utilizada em conjunto com a classe FilaEspera.
 
     Attributes:
-        adotante (id - Adotante): id do adotante considerado.
+        adotante (Adotante): Adotante considerado.
         tempo_espera (int): tempo de espera em dias.
         compatibilidade (float): nível de compatibilidade entre o adotante e o animal considerado.
     """
 
-    def __init__(self, *, adotante: dict, tempo_espera: int, compatibilidade: float):
-        self.__adotante: dict = adotante  # Pode ser apenas lido via property getter
+    def __init__(self, *, adotante: Adotante, tempo_espera: int, compatibilidade: float):
+        self.__adotante: Adotante = adotante  # Pode ser apenas lido via property getter
         self.tempo_espera: int = tempo_espera
         # Pode ser apenas lido via property getter
         self.__compatibilidade: float = compatibilidade  
@@ -31,15 +32,19 @@ class EntradaFila:
         return self.__compatibilidade
 
     def __str__(self) -> str:
-        return f"Entrada para espera de {self.adotante["nome"]}, tempo de espera de {self.tempo_espera} e compatibilidade({self.compatibilidade})"
+        return f"Entrada para espera de {self.adotante.nome}, tempo de espera de {self.tempo_espera} e compatibilidade({self.compatibilidade})"
 
     def __repr__(self) -> str:
-        return f"EntradaFila(adotante={self.adotante}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
+        return f"EntradaFila(adotante={repr(self.adotante)}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
 
-    def __eq__(self, outra_entrada) -> bool:
+    def __eq__(self, outra_entrada:object) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
         return repr(self) == repr(outra_entrada)
 
     def __lt__(self, outra_entrada) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
         return self.compatibilidade < outra_entrada.compatibilidade
 
 class FilaEspera:
@@ -53,8 +58,8 @@ class FilaEspera:
         fila (List[EntradaFila]): Lista de entradas com interesse no animal.
     """
 
-    def __init__(self, *, animal: int, fila: list[EntradaFila] = []):
-        self.__animal: int = animal  # Pode ser apenas lido via getter
+    def __init__(self, *, animal: Animal, fila: list[EntradaFila] = []):
+        self.__animal: Animal = animal  # Pode ser apenas lido via getter
         self.__fila = fila
 
     # __animal não pode ser alterado
@@ -74,7 +79,7 @@ class FilaEspera:
             
         # Cria a entrada e adiciona na fila
         entrada = EntradaFila(
-            adotante=adotante.__dict__, tempo_espera=0, compatibilidade=100
+            adotante=adotante, tempo_espera=0, compatibilidade=100
         )
         self.__fila.append(entrada)
 
@@ -93,7 +98,7 @@ class FilaEspera:
         for i, e in enumerate(self.__fila):
             # Busca o adotante comparando os emails
             # Posso implementar isso via __eq__
-            if e.adotante["_Pessoa__email"] == adotante.email:
+            if e.adotante == adotante:
                 self.__fila.pop(i)
                 return
 
@@ -119,15 +124,18 @@ class FilaEspera:
         return res
 
     def __str__(self) -> str:
-        return f"Fila de Espera do animal {self.animal}"
+        return f"Fila de Espera do animal {self.animal.nome}"
 
     def __repr__(self) -> str:
-        return f"FilaEspera(animal={self.animal}, fila={self.__fila})"
+        return f"FilaEspera(animal={repr(self.animal)}, fila={self.__fila})"
 
     def __len__(self) -> int:
         return len(self.__fila)
 
     def __contains__(self, item) -> bool:
+        if not isinstance(item, EntradaFila):
+            return NotImplemented
+        
         for i in self.__fila:
             # Compara via __eq__ de EntradaFila
             if i == item:
@@ -136,4 +144,6 @@ class FilaEspera:
         return False
 
     def __lt__(self, outra_fila) -> bool:
+        if not isinstance(outra_fila, FilaEspera):
+            return NotImplemented
         return len(self) < len(outra_fila)

@@ -4,6 +4,7 @@ Aqui estão descritas as classes iniciais pensadas para o projeto, juntamente co
 
 Esta descrição é apenas um ponto de partida para o desenvolvimento do projeto, não necessariamente se manterá inauterada até o fim do desenvolvimento.
 
+[Click para visualizar a modelagem de relacionamentos](./uml-relations.md)
 [Click para voltar ao readme](../README.md#-classes-planejadas)
 
 ### Sumário:
@@ -131,7 +132,7 @@ classDiagram
 classDiagram
     %% Classes
     class EntradaFila {
-        + adotante: dict;
+        + adotante: Adotante;
         + tempo_espera: int;
         + compatibilidade: float;
     }
@@ -142,7 +143,7 @@ classDiagram
         + add(adotante: Adotante) -> None;
         + remove(adotante: Adotante) -> None;
         + proximo() -> EntradaFila;
-        + get_fila() -> list[dict];
+        + get_fila() -> list[Adotante];
     }
 ```    
 
@@ -197,7 +198,7 @@ classDiagram
 ```mermaid
 classDiagram
     class Quarentena {
-        + animal: int;
+        + animal: Animal;
         + data_inicial: datetime;
         + data_final: null | datetime;
         + motivo: COMPORTAMENTO, DOENCA, OUTRO;
