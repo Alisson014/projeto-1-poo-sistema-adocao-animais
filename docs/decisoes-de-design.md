@@ -112,3 +112,21 @@ ex = Exemplo(param1="valor", param_n="valor")
 ---
 
 <br>
+
+## 7. Persistência em json:
+
+### Motivo:
+Maior familiaridade com a tecnologia e preocupação com a disponibilidade de tempo que seria necessária para empregar os conceitos de banco de dados, como relacionamentos, etc. Além de que outras demandas também estão limitando o tempo disponível para dedicação a este sistema.
+
+### Implicações:
+A percistência dos dados do sistema deverá ser efetuada mediante arquivos json. Logo, o arquivo `database.db` deixará de existir. Além disso, a estratégia empregada para o armazenamento em json envolverá arquivos distintos para informações distintas, em outras palavras, cada tabela que seria modelada em um banco de dados sqlite, será um arquivo json.
+
+```bash
+# Exemplo
+cachorro.json
+adocao.json
+```
+
+---
+
+<br>
