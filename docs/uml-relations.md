@@ -9,6 +9,7 @@ Atributos e métodos não foram representados para evitar poluição visual e ex
 ### Sumário:
 * [Animais](#animais);
 * [Lista de Espera](#lista-de-espera);
+* [Quarentena](#quarentena);
 * [Registros](#registros);
 * [Relatórios](#relatórios);
 
@@ -20,12 +21,10 @@ Atributos e métodos não foram representados para evitar poluição visual e ex
 ```mermaid
 classDiagram
     class Animal {}
-    class VacinavelMixin {}
-    class Quarentena {}
     class Evento {}
+    class VacinavelMixin {}
     class Vacina {}
 
-    Animal "1" *-- "0..*" Quarentena : contem (composição)
     Animal "1" *-- "0..*" Evento : contem (composição)
     VacinavelMixin "1" *-- "0..*" Vacina : contem (composição)
 
@@ -45,6 +44,20 @@ classDiagram
     FilaEspera "1" *-- "1..*" EntradaFila : contem (composição)
     FilaEspera "1" o-- "1" Animal : contem (agregação)
     EntradaFila "1" o-- "1" Adotante : contem (agregação)
+
+```
+
+<br>
+
+---
+
+### Quarentena:
+```mermaid
+classDiagram
+    class Quarentena {}
+    class Animal {}
+
+    Quarentena "1" o-- "1..*" Animal : possui (agregação)
 
 ```
 

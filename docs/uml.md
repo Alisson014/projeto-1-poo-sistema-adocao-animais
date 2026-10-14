@@ -198,7 +198,7 @@ classDiagram
 ```mermaid
 classDiagram
     class Quarentena {
-        + animal: int;
+        + animal: Animal;
         + data_inicial: datetime;
         + data_final: null | datetime;
         + motivo: COMPORTAMENTO, DOENCA, OUTRO;

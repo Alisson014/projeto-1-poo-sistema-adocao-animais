@@ -10,7 +10,7 @@ class EntradaFila:
     fina de espera de um animal. Será utilizada em conjunto com a classe FilaEspera.
 
     Attributes:
-        adotante (id - Adotante): id do adotante considerado.
+        adotante (Adotante): Adotante considerado.
         tempo_espera (int): tempo de espera em dias.
         compatibilidade (float): nível de compatibilidade entre o adotante e o animal considerado.
     """
@@ -144,6 +144,6 @@ class FilaEspera:
         return False
 
     def __lt__(self, outra_fila) -> bool:
-        if not isinstance(outra_fila, EntradaFila):
+        if not isinstance(outra_fila, FilaEspera):
             return NotImplemented
         return len(self) < len(outra_fila)
