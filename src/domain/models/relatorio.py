@@ -203,6 +203,7 @@ class TaxaAdocaoPorte(Relatorio):
     def __str__(self) -> str:
         return f"Relatório da taxa de adoção por portes"
 
+
 class TaxaTempoMedioEntradaAdocao(Relatorio):
     """Classe para modelar os relatórios com o tempo médio entre entrada e adoção.
 
@@ -246,6 +247,7 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
 
     def __str__(self) -> str:
         return f"Relatório do tempo médio entre entrada e adoção"
+
 
 class TaxaDevolucoes(Relatorio):
     """Classe para modelar os relatórios com a taxa entre adoções e devoluções;

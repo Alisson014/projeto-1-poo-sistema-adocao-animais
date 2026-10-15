@@ -6,7 +6,7 @@ from src.config.settings import (
     DuracaoReserva,
     IdadeMinima,
     PesosCompatibilidade,
-    PorteXArea
+    PorteXArea,
 )
 
 # Definindo explicitamento o que é exportado
@@ -15,5 +15,5 @@ __all__ = [
     "DuracaoReserva",
     "IdadeMinima",
     "PesosCompatibilidade",
-    "PorteXArea"
+    "PorteXArea",
 ]

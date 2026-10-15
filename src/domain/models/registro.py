@@ -141,6 +141,7 @@ class Adocao(Registro):
     def __repr__(self) -> str:
         return f"Adocao(id={self.id}, animal={repr(self.animal)}, adotante={repr(self.adotante)}, taxa={self.taxa}, pago={self.pago}, data={self.data})"
 
+
 class Devolucao(Registro):
     """Classe para modelar devoluções no sistema
 

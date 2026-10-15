@@ -15,11 +15,13 @@ class EntradaFila:
         compatibilidade (float): nível de compatibilidade entre o adotante e o animal considerado.
     """
 
-    def __init__(self, *, adotante: Adotante, tempo_espera: int, compatibilidade: float):
+    def __init__(
+        self, *, adotante: Adotante, tempo_espera: int, compatibilidade: float
+    ):
         self.__adotante: Adotante = adotante  # Pode ser apenas lido via property getter
         self.tempo_espera: int = tempo_espera
         # Pode ser apenas lido via property getter
-        self.__compatibilidade: float = compatibilidade  
+        self.__compatibilidade: float = compatibilidade
 
     # __adotante não pode ser alterado
     @property
@@ -37,7 +39,7 @@ class EntradaFila:
     def __repr__(self) -> str:
         return f"EntradaFila(adotante={repr(self.adotante)}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
 
-    def __eq__(self, outra_entrada:object) -> bool:
+    def __eq__(self, outra_entrada: object) -> bool:
         if not isinstance(outra_entrada, EntradaFila):
             return NotImplemented
         return repr(self) == repr(outra_entrada)
@@ -46,6 +48,7 @@ class EntradaFila:
         if not isinstance(outra_entrada, EntradaFila):
             return NotImplemented
         return self.compatibilidade < outra_entrada.compatibilidade
+
 
 class FilaEspera:
     """Classe para modelar filas de espera no sistema
@@ -76,11 +79,9 @@ class FilaEspera:
             isinstance(adotante, Adotante)
         except ValueError:
             raise TipagemError("Adotante", adotante)
-            
+
         # Cria a entrada e adiciona na fila
-        entrada = EntradaFila(
-            adotante=adotante, tempo_espera=0, compatibilidade=100
-        )
+        entrada = EntradaFila(adotante=adotante, tempo_espera=0, compatibilidade=100)
         self.__fila.append(entrada)
 
         ##### Precisa inserir ordenando pelo nível de compatibilidade
@@ -135,7 +136,7 @@ class FilaEspera:
     def __contains__(self, item) -> bool:
         if not isinstance(item, EntradaFila):
             return NotImplemented
-        
+
         for i in self.__fila:
             # Compara via __eq__ de EntradaFila
             if i == item:

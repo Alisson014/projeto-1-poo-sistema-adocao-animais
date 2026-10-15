@@ -95,7 +95,7 @@ class PorteXArea(Politica):
 
     def __str__(self):
         return f"Política de Area por Porte, Porte p({self.porte_p_min}) - Porte m({self.porte_m_min}) - Porte g({self.porte_g_min})"
-    
+
     def __repr__(self):
         return f"PorteXArea(porte_p_min={self.porte_p_min}, porte_m_min={self.porte_m_min}, porte_g_min={self.porte_g_min})"
 
@@ -150,6 +150,6 @@ class PesosCompatibilidade(Politica):
 
     def __str__(self):
         return f"Política de Pesos para compatibilidade, porte X moradia({self.peso_porte_moradia}), experiência X temperamento({self.peso_experiencia_temperamento}), tempo livre X energia({self.peso_tempo_livre_energia}). crianças X temperamento=({self.peso_criancas_temperamento})"
-    
+
     def __repr__(self):
         return f"PesosCompatibilidade(peso_porte_moradia={self.peso_porte_moradia}), peso_experiencia_temperamento=({self.peso_experiencia_temperamento}), peso_tempo_livre_energia=({self.peso_tempo_livre_energia}). peso_criancas_temperamento=({self.peso_criancas_temperamento})"
