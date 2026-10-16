@@ -51,6 +51,13 @@ class Pessoa:
             raise ValorForaDoIntervaloError("idade", idade)
         self.__idade: int = idade
 
+    @classmethod
+    def from_dict(cls, pessoa:dict):
+        pass
+
+    def to_dict(self) -> dict:
+        pass
+
     def __eq__(self, outra_pessoa: object) -> bool:
         if not isinstance(outra_pessoa, Pessoa):
             return NotImplemented
@@ -146,6 +153,23 @@ class Adotante(Pessoa):
             raise ValorForaDoIntervaloError("area_util", area_util)
 
         self.__area_util = area_util
+
+    @classmethod
+    def from_dict(cls, pessoa:dict):
+        return cls(**pessoa)
+
+    def to_dict(self) -> dict:
+        return {
+            "nome": self.nome,
+            "email": self.email,
+            "idade": self.idade,
+            "moradia": self.moradia,
+            "experiencia": self.experiencia,
+            "tempo_livre_min": self.tempo_livre_min,
+            "possui_criancas": self.possui_criancas,
+            "outros_animais": self.outros_animais,
+            "area_util": self.area_util,
+        }
 
     def __str__(self) -> str:
         return f"Adotante {self.nome}, {self.idade} anos e tem o email {self.email}"
