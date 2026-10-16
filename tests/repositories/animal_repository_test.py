@@ -1,6 +1,6 @@
 from src.domain import Cachorro, Calopsita, Coelho, Gato, Vacina, Evento
-from datetime import datetime
 from src.repositories import AnimalRepository
+from datetime import datetime
 
 import pytest
 
@@ -49,7 +49,6 @@ def test_get_all_cachorro():
     assert len(cachorros) >= 1
     assert type(cachorros[id_cachorro - 1]).__name__ == "Cachorro"
     assert cachorros[id_cachorro - 1].temperamento[0].value
-    # assert cachorros[id_cachorro-1].vacinas[0].__str__()
     assert repr(cachorro) == repr(cachorros[id_cachorro - 1])
 
 

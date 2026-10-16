@@ -27,10 +27,11 @@ class AnimalRepository:
 
     def create(self, animal: Animal):
         animais: dict = self.__get_data()
+        # As chaves no json são strings, é preciso converter o id para str
+        if animais.get(str(animal.id)):
+            raise Exception(f"O id {animal.id} já está reservado para um animal")
+        
         with self.path.open("w", encoding="utf-8") as file:
-            # As chaves no json são strings, é preciso converter o id para str
-            if animais.get(str(animal.id)):
-                raise Exception(f"O id {animal.id} já está reservado para um animal")
 
             animais[str(animal.id)] = animal.to_dict()
 
@@ -38,56 +39,33 @@ class AnimalRepository:
             return True
 
     def get_all(self) -> list[Animal]:
+        animais = self.__get_data()
+
         # Retorna uma lista vazia se o arquivo não existir
-        if not self.path.exists():
+        if not animais:
             return []
 
-        with self.path.open("r", encoding="utf-8") as file:
-            animais: dict = json.load(file)
+        res = [self.animal_class.from_dict(animais[id]) for id in animais.keys()]
 
-            if not animais:
-                return []
-
-            # Converte os eventos em instâncias
-            for i in animais.keys():
-                for d in animais[i]["historico"]:
-                    print(d)
-                    d = Evento.from_dict(d)
-
-            res = [self.animal_class.from_dict(animais[id]) for id in animais.keys()]
-
-            return res
+        return res
 
     def get_by_id(self, id: int) -> Animal | None:
-        # Retorna None caso o arquivo não exista
-        if not self.path.exists():
-            return None
+        animais = self.__get_data()
 
-        with self.path.open("r", encoding="utf-8") as file:
-            animais: dict = json.load(file)
+        # Levanta uma exceção caso o id não exista
+        if not animais.get(str(id)):
+            raise Exception(f"{id} não existente no banco de animais")
 
-            # Levanta uma exceção caso o id não exista
-            if not animais.get(str(id)):
-                raise Exception(f"{id} não existente no banco de animais")
+        animal = animais[str(id)]
 
-            animal = animais[str(id)]
-
-            for d in animal["historico"]:
-                d = Evento.from_dict(d)
-
-            if animal.get("vacinas"):
-                for d in animal["vacinas"]:
-                    d = Vacina.from_dict(d)
-
-            return self.animal_class.from_dict(animal)
+        return self.animal_class.from_dict(animal)
 
     def update(self, new_animal: Animal):
         animais: dict = self.__get_data()
+        if not animais.get(str(new_animal.id)):
+            raise Exception(f"O id {new_animal.id} não existe no banco de animais")
 
         with self.path.open("w", encoding="utf=8") as file:
-            if not animais.get(str(new_animal.id)):
-                raise Exception(f"O id {new_animal.id} não existe no banco de animais")
-
             animais[str(new_animal.id)] = new_animal.to_dict()
 
             json.dump(animais, file, ensure_ascii=False, indent=4)
@@ -95,9 +73,10 @@ class AnimalRepository:
     def delete_by_id(self, id):
         animais = self.__get_data()
 
+        if not animais.get(str(id)):
+            raise Exception(f"O id {id} não existe no banco de animais")
+
         with self.path.open("w", encoding="utf-8") as file:
-            if not animais.get(str(id)):
-                raise Exception(f"O id {id} não existe no banco de animais")
 
             # Remove o item cuja chave é o id passado como parâmetro
             animais.pop(str(id))
@@ -105,10 +84,11 @@ class AnimalRepository:
             json.dump(animais, file, ensure_ascii=False, indent=4)
 
     def delete_all(self, validator: bool = False):
+        # Validator previne invacações por engano
+        if not validator:
+            raise Exception("Operação não confirmada")
+        
         with self.path.open("w", encoding="utf-8") as file:
-            # Validator previne invacações por engano
-            if not validator:
-                raise Exception("Operação não validada")
 
             json.dump({}, file, ensure_ascii=False, indent=4)
 
