@@ -1,5 +1,7 @@
 import json
 from ..domain import Animal, Cachorro, Calopsita, Coelho, Gato, Evento, Vacina
+from ..domain.exceptions import NaoCadastradoError
+
 from pathlib import Path
 
 
@@ -54,7 +56,7 @@ class AnimalRepository:
 
         # Levanta uma exceção caso o id não exista
         if not animais.get(str(id)):
-            raise Exception(f"{id} não existente no banco de animais")
+            raise NaoCadastradoError(id, "animais")
 
         animal = animais[str(id)]
 
@@ -63,7 +65,7 @@ class AnimalRepository:
     def update(self, new_animal: Animal):
         animais: dict = self.__get_data()
         if not animais.get(str(new_animal.id)):
-            raise Exception(f"O id {new_animal.id} não existe no banco de animais")
+            raise NaoCadastradoError(f"Animal({new_animal.id})", self.path.__str__())
 
         with self.path.open("w", encoding="utf=8") as file:
             animais[str(new_animal.id)] = new_animal.to_dict()
@@ -93,11 +95,7 @@ class AnimalRepository:
             json.dump({}, file, ensure_ascii=False, indent=4)
 
     def id_generate(self):
-        try:
-            animais = self.__get_data()
-        except Exception:
-            # Ignora se erros ocorrerem caso o arequivo não exista
-            pass
+        animais = self.__get_data()
 
         # O primeiro id é sempre 1
         if not animais:

@@ -49,7 +49,7 @@ class Animal:
         historico: list[Evento] = [],
         temperamento: list[str] = [],
     ):
-        self.__id: int = id  # O id de um elemento não pode ser alterado, apenas lido
+        self.__id: int = int(id)  # O id de um elemento não pode ser alterado, apenas lido
         self.especie: str = especie
         self.nome: str = nome
         self.sexo: Sexo = sexo  # property setter (privado)
@@ -444,7 +444,7 @@ class Calopsita(Animal, AdestravelMixin):
     ):
         Animal.__init__(
             self,
-            id=id,
+            id=(id),
             especie=especie,
             nome=nome,
             sexo=sexo,

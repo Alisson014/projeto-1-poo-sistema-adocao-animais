@@ -51,6 +51,13 @@ class RelatorioNaoGeradoError(Exception):
         super().__init__("É preciso gerar o conteúdo do relatório")
 
 
+class NaoCadastradoError(Exception):
+    def __init__(self, obj, type_obj):
+        super().__init__(f"{obj} não encontrado na base de dados de {type_obj}")
+        self.obj = obj
+        self.type_obj = type_obj
+
+
 # Define explicitamente o que é exportado
 __all__ = [
     "ValorForaDoIntervaloError",
@@ -59,4 +66,5 @@ __all__ = [
     "NaoEncontradoError",
     "EmailInvalidoError",
     "RelatorioNaoGeradoError",
+    "NaoCadastradoError"
 ]
