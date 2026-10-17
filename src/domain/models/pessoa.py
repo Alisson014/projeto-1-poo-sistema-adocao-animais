@@ -55,7 +55,7 @@ class Pessoa:
     def from_dict(cls, pessoa:dict):
         pass
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict: # type: ignore[empty-body]
         pass
 
     def __eq__(self, outra_pessoa: object) -> bool:

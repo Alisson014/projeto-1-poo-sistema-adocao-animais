@@ -3,6 +3,7 @@ from src.domain.models import Quarentena
 from src.repositories import RegistroRepository, PessoaRespository
 from src.domain.exceptions import NaoCadastradoError
 
+from random import randint
 from datetime import datetime
 import pytest
 
@@ -40,7 +41,22 @@ cachorro = Cachorro(
     passeios_necessarios_dia=1,
 )
 
-adotante = PessoaRespository(adotante_path, Adotante).get_all()[0]
+email = f"email{randint(1, 1000000000)}@gmail.com"
+
+adotante = Adotante(
+    nome="teste",
+    email=email,
+    idade=18,
+    moradia="CASA_COM_QUINTAL",
+    experiencia="INICIANTE",
+    tempo_livre_min=50,
+    possui_criancas=True,
+    outros_animais=True,
+    area_util=50,
+)
+
+PessoaRespository(adotante_path, Adotante).create(adotante)
+adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email) # type: ignore[arg-type]
 
 # Testes Registro Adocao
 
@@ -132,7 +148,7 @@ def test_update_devolucao():
 
     assert new_devolucao.motivo == getted_devolucao.motivo
 
-def test_delete_by_id():
+def test_delete_by_id_devolucao():
     deleted_id = devolucao_repository.generate_id()
     deleted_devolucao = Devolucao(
         id=deleted_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
@@ -185,7 +201,7 @@ def test_update_reserva():
 
     assert new_reserva.compatibilidade == getted_reserva.compatibilidade
 
-def test_delete_by_id():
+def test_delete_by_id_reserva():
     deleted_id = reserva_repository.generate_id()
     
     deleted_reserva = Reserva(

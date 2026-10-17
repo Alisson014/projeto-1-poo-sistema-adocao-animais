@@ -4,7 +4,7 @@ from src.repositories import PessoaRespository, AnimalRepository
 from random import randint
 import pytest
 
-adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante)
+adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante) # type: ignore[arg-type]
 
 
 # Utilizado para a geração dinâmica de emails diferentes (apenas para os testes)

@@ -1,13 +1,13 @@
 import json
 from pathlib import Path
 
-from ..domain import Registro, Adocao, Devolucao, Reserva, Adotante
+from ..domain import Adocao, Devolucao, Reserva, Adotante
 from ..domain.exceptions import NaoCadastradoError
 from .animal_repository import AnimalRepository
 from .pessoa_repository import PessoaRespository
 
 class RegistroRepository:
-    """Classe para manipulação de arquivos json referentes ao domínio de Regsitro
+    """Classe para manipulação de arquivos json referentes ao domínio de Registro
     
     A classe consegue manipular cada um dos bancos de registro, sendo que
     a classe deve obrigatoriamente ter os métodos from_dict e to_dict

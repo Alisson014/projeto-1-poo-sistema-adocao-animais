@@ -18,10 +18,21 @@ class Politica(ABC):
 
     def __init__(self, *, nome: str, data_modificacao: datetime):
         self.nome: str = nome
-        self.data_modificacao: datetime = data_modificacao
+        self.data_modificacao: datetime = datetime.fromisoformat(data_modificacao) if isinstance(data_modificacao, str) else data_modificacao
 
     @abstractmethod
     def validar(self) -> bool:
+        pass
+
+    @abstractmethod
+    def to_dict(self) -> dict:
+        return {
+            "nome": self.nome,
+            "data_modificacao": self.data_modificacao.__str__()
+        }
+
+    @classmethod
+    def from_dict(cls, politica:dict):
         pass
 
 
@@ -41,6 +52,16 @@ class IdadeMinima(Politica):
     def validar(self, idade) -> bool:  # type: ignore[override]
         """Checagem se a idade do adotantes respeita o mínimo das configurações"""
         return idade >= self.idade_minima
+
+    @classmethod
+    def from_dict(cls, politica:dict):
+        return cls(**politica)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "idade_minima": self.idade_minima
+        }
 
     def __str__(self):
         return f"Política de Idade mínima, idade_minima = {self.idade_minima}"
@@ -93,6 +114,19 @@ class PorteXArea(Politica):
         # Retorna um booleano que indica se atende ou não
         return area >= portes_area[porte.value]
 
+    @classmethod
+    def from_dict(cls, politica:dict):
+        return cls(**politica)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "porte_p_min": self.porte_p_min,
+            "porte_m_min": self.porte_m_min,
+            "porte_g_min": self.porte_g_min,
+        }
+
+
     def __str__(self):
         return f"Política de Area por Porte, Porte p({self.porte_p_min}) - Porte m({self.porte_m_min}) - Porte g({self.porte_g_min})"
 
@@ -112,6 +146,19 @@ class DuracaoReserva(Politica):
     def __init__(self, *, nome: str, data_modificacao: datetime, duracao_dias: int):
         super().__init__(nome=nome, data_modificacao=data_modificacao)
         self.duracao_dias: int = duracao_dias
+
+    @classmethod
+    def from_dict(cls, politica:dict):
+        return cls(**politica)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "duracao_dias": self.duracao_dias
+        }
+
+    def validar(self):
+        return NotImplemented
 
     def __str__(self):
         return f"Política de Duaração da reserva, duração = {self.duracao_dias} dias"
@@ -147,6 +194,22 @@ class PesosCompatibilidade(Politica):
         self.peso_experiencia_temperamento: float = peso_experiencia_temperamento
         self.peso_tempo_livre_energia: float = peso_tempo_livre_energia
         self.peso_criancas_temperamento: float = peso_criancas_temperamento
+
+    @classmethod
+    def from_dict(cls, politica):
+        return cls(**politica)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "peso_porte_moradia": self.peso_porte_moradia,
+            "peso_experiencia_temperamento": self.peso_experiencia_temperamento,
+            "peso_tempo_livre_energia": self.peso_tempo_livre_energia,
+            "peso_criancas_temperamento": self.peso_criancas_temperamento,
+        }
+
+    def validar(self):
+        return NotImplemented
 
     def __str__(self):
         return f"Política de Pesos para compatibilidade, porte X moradia({self.peso_porte_moradia}), experiência X temperamento({self.peso_experiencia_temperamento}), tempo livre X energia({self.peso_tempo_livre_energia}). crianças X temperamento=({self.peso_criancas_temperamento})"
