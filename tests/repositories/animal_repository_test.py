@@ -4,10 +4,10 @@ from datetime import datetime
 
 import pytest
 
-cachorro_repository = AnimalRepository("tests/data/cachorro_teste.json", Cachorro)  # type: ignore[arg-type]
-calopsita_repository = AnimalRepository("tests/data/calopsita_teste.json", Calopsita)  # type: ignore[arg-type]
-coelho_repository = AnimalRepository("tests/data/coelho_teste.json", Coelho)  # type: ignore[arg-type]
-gato_repository = AnimalRepository("tests/data/gato_teste.json", Gato)  # type: ignore[arg-type]
+cachorro_repository = AnimalRepository("tests/data/animal/cachorro_teste.json", Cachorro)  # type: ignore[arg-type]
+calopsita_repository = AnimalRepository("tests/data/animal/calopsita_teste.json", Calopsita)  # type: ignore[arg-type]
+coelho_repository = AnimalRepository("tests/data/animal/coelho_teste.json", Coelho)  # type: ignore[arg-type]
+gato_repository = AnimalRepository("tests/data/animal/gato_teste.json", Gato)  # type: ignore[arg-type]
 
 # Testes Cachorro
 

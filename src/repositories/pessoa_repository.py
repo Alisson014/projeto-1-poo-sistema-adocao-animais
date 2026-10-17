@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from ..domain import Pessoa, Adotante
+from ..domain.exceptions import NaoCadastradoError
 
 
 class PessoaRespository:
@@ -53,7 +54,7 @@ class PessoaRespository:
             return None
 
         if not pessoas.get(email):
-            raise Exception(f"O email {email} não existe na base de dados")
+            raise NaoCadastradoError(email, "adotante")
 
         return self.class_name.from_dict(pessoas[email])
 

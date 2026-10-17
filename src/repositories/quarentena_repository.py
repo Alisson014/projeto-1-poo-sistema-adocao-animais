@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from datetime import datetime
 
 from ..domain.models import Quarentena
 from ..domain.exceptions import NaoCadastradoError, NaoEncontradoError
@@ -70,11 +69,7 @@ class QuarentenaRepository:
             try:
                 quarentenas[i]["animal"] = self.animal_repository.get_by_id(quarentenas[i]["animal"])
 
-                formater = Quarentena(
-                        id= 0, animal=quarentenas[i]["animal"], data_inicial=datetime.now(), motivo="OUTRO", status="CUMPRIDA"
-                )
-
-                res.append(formater.from_dict(quarentenas[i]))
+                res.append(Quarentena.from_dict(quarentenas[i]))
             except NaoCadastradoError:
                 # Ignora caso o código tente buscar o id de um animal que foi deletado
                 # Precaução a falhas na consistência dos dados
@@ -92,6 +87,9 @@ class QuarentenaRepository:
         if not quarentenas:
             return None
 
+        if not quarentenas.get(str(id)):
+            raise NaoCadastradoError(f"Quarentena({id})", self.path.__str__())
+
         quarentena = quarentenas[str(id)]
 
         try:
@@ -102,11 +100,7 @@ class QuarentenaRepository:
 
             raise NaoEncontradoError(f"Quarentena({id})")
 
-        formater = Quarentena(
-            id= 0, animal=quarentena["animal"], data_inicial=datetime.now(), motivo="OUTRO", status="CUMPRIDA"
-        )
-
-        return formater.from_dict(quarentena)
+        return Quarentena.from_dict(quarentena)
 
     def update(self, new_quarentena:Quarentena):
         quarentenas = self.__get_data()

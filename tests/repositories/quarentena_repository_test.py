@@ -8,15 +8,15 @@ from datetime import datetime
 
 import pytest
 
-cachorro_path = "tests/data/cachorro_teste.json"
-calopsita_path = "tests/data/calopsita_teste.json"
-coelho_path = "tests/data/coelho_teste.json"
-gato_path = "tests/data/gato_teste.json"
+cachorro_path = "tests/data/animal/cachorro_teste.json"
+calopsita_path = "tests/data/animal/calopsita_teste.json"
+coelho_path = "tests/data/animal/coelho_teste.json"
+gato_path = "tests/data/animal/gato_teste.json"
 
 
 # Testes Quarentena Cachorro
 
-quarentena_cachorro_repository = QuarentenaRepository("tests/data/quarentena_cachorro_teste.json", Cachorro, cachorro_path)
+quarentena_cachorro_repository = QuarentenaRepository("tests/data/quarentena/quarentena_cachorro_teste.json", Cachorro, cachorro_path)
 
 quarentena_cacho_id = quarentena_cachorro_repository.generate_id()
 
@@ -86,7 +86,7 @@ def test_delete_by_id_quarentena_cachorro():
 
 # Testes Quarentena calopsita
 
-quarentena_calopsita_repository = QuarentenaRepository("tests/data/quarentena_calopsita_teste.json", Calopsita, calopsita_path)
+quarentena_calopsita_repository = QuarentenaRepository("tests/data/quarentena/quarentena_calopsita_teste.json", Calopsita, calopsita_path)
 
 quarentena_calop_id = quarentena_calopsita_repository.generate_id()
 
@@ -154,7 +154,7 @@ def test_delete_by_id_quarentena_calopsita():
 
 # Testes Quarentena coelho
 
-quarentena_coelho_repository = QuarentenaRepository("tests/data/quarentena_coelho_teste.json", Coelho, coelho_path)
+quarentena_coelho_repository = QuarentenaRepository("tests/data/quarentena/quarentena_coelho_teste.json", Coelho, coelho_path)
 
 quarentena_coel_id = quarentena_coelho_repository.generate_id()
 
@@ -224,7 +224,7 @@ def test_delete_by_id_quarentena_coelho():
 
 # Testes Quarentena gato
 
-quarentena_gato_repository = QuarentenaRepository("tests/data/quarentena_gato_teste.json", Gato, gato_path)
+quarentena_gato_repository = QuarentenaRepository("tests/data/quarentena/quarentena_gato_teste.json", Gato, gato_path)
 
 quarentena_gato_id = quarentena_gato_repository.generate_id()
 

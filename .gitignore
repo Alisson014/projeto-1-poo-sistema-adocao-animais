@@ -1,7 +1,7 @@
 
 # Ignore json test database
 
-tests/data/*.json
+tests/data/*/*.json
 
 # Default python settings
 
