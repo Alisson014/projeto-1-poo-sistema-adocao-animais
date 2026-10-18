@@ -1,8 +1,12 @@
 from src.domain import Cachorro, Calopsita, Coelho, Gato, Vacina, Evento
 from src.repositories import AnimalRepository
 from datetime import datetime
+from pathlib import Path
 
 import pytest
+
+# Garante que a pasta dos arquivos fictícios existe
+Path("tests/data/animal").mkdir(parents=True, exist_ok=True)
 
 cachorro_repository = AnimalRepository("tests/data/animal/cachorro_teste.json", Cachorro)  # type: ignore[arg-type]
 calopsita_repository = AnimalRepository("tests/data/animal/calopsita_teste.json", Calopsita)  # type: ignore[arg-type]

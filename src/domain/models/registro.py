@@ -140,13 +140,9 @@ class Adocao(Registro):
         data: datetime,
     ):
         super().__init__(id=id, animal=animal, adotante=adotante)
-        self.__taxa: float = taxa  # Pode apenas ser lido
+        self.taxa: float = taxa
         self.pago: bool = pago
         self.data: datetime = datetime.fromisoformat(data) if isinstance(data, str) else data
-
-    @property
-    def taxa(self) -> float:
-        return self.__taxa
 
     @classmethod
     def from_dict(cls, registro:dict):
@@ -166,7 +162,7 @@ class Adocao(Registro):
 
     def gerar_contrato(self) -> str:
         """Retorna o contrato da adoção"""
-        return f"Adoção realizada em {self.data.day}/{self.data.month}/{self.data.year}\nValor da taxa:R$ {self.__taxa:.2f}\nPago: {'Sim' if self.pago else 'Não'}"
+        return f"Adoção realizada em {self.data.day}/{self.data.month}/{self.data.year}\nValor da taxa:R$ {self.taxa:.2f}\nPago: {'Sim' if self.pago else 'Não'}"
 
     def registrar_pagamento(self) -> None:
         self.pago = True

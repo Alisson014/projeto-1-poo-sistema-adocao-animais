@@ -4,9 +4,13 @@ from datetime import datetime
 from src.domain import Cachorro, Calopsita, Coelho, Gato
 from src.domain.models import Quarentena
 from src.repositories import QuarentenaRepository
-from datetime import datetime
 
+from datetime import datetime
+from pathlib import Path
 import pytest
+
+# Garante que a pasta dos arquivos fictícios existe
+Path("tests/data/quarentena").mkdir(parents=True, exist_ok=True)
 
 cachorro_path = "tests/data/animal/cachorro_teste.json"
 calopsita_path = "tests/data/animal/calopsita_teste.json"

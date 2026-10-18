@@ -2,10 +2,13 @@ from src.domain import Pessoa, Adotante, Cachorro
 from src.repositories import PessoaRespository, AnimalRepository
 
 from random import randint
+from pathlib import Path
 import pytest
 
-adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante) # type: ignore[arg-type]
+# Garante que a pasta dos arquivos fictícios existe
+Path("tests/data/pessoa").mkdir(parents=True, exist_ok=True)
 
+adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante) # type: ignore[arg-type]
 
 # Utilizado para a geração dinâmica de emails diferentes (apenas para os testes)
 email = f"email{randint(1, 1000000000)}@gmail.com"

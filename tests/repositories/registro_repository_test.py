@@ -5,7 +5,11 @@ from src.domain.exceptions import NaoCadastradoError
 
 from random import randint
 from datetime import datetime
+from pathlib import Path
 import pytest
+
+# Garante que a pasta dos arquivos fictícios existe
+Path("tests/data/registro").mkdir(parents=True, exist_ok=True)
 
 cachorro_path = "tests/data/animal/cachorro_teste.json"
 calopsita_path = "tests/data/animal/calopsita_teste.json"

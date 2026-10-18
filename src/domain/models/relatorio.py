@@ -7,12 +7,36 @@ from src.domain.exceptions import RelatorioNaoGeradoError
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+def adocao_serializer(adocao:Adocao):
+    return {
+        "id": adocao.id,
+        "animal": adocao.animal.to_dict(),
+        "adotante": adocao.adotante.to_dict(),
+        "taxa": adocao.taxa,
+        "pago": adocao.pago,
+        "data": adocao.data.__str__()
+    }
+
+def devolucao_serializer(adocao:Devolucao):
+    return {
+        "id": adocao.id,
+        "animal": adocao.animal.to_dict(),
+        "adotante": adocao.adotante.to_dict(),
+        "motivo": adocao.motivo,
+        "data": adocao.data.__str__()
+    }
 
 def get_dict_list(array: list):
     """Método auxiliar que retorna uma lista de dicionários de uma lista de objetos"""
     dict_list = []
+
     for i in array:
-        dict_list.append(i.__dict__)
+        if isinstance(i, Adocao):
+            dict_list.append(adocao_serializer(i))
+        elif isinstance(i, Devolucao):
+            dict_list.append(devolucao_serializer(i))
+        else:
+            dict_list.append(i.to_dict())
 
     return dict_list
 
@@ -67,27 +91,40 @@ class Top5MaisAdotaveis(Relatorio):
         nome: str,
         animais: list[Animal],
         adotantes: list[Adotante],
+        top5: list[Animal]=[]
     ):
         super().__init__(id=id, data=data, nome=nome)
         self.animais = animais
         self.adotantes = adotantes
-        self.__top5: list[dict] = []
+        self.top5: list[Animal] = top5
+
+    @classmethod
+    def from_dict(cls, relatorio:dict):
+        return cls(**relatorio)
 
     def gerar(self):
         """Gera uma lista com os dicionários contendo os 5 animais mais adotáveis ordenados pela média de compatibilidade"""
         # Só pode ser desenvolvido quando eu definir o cálculo de compatibilidade
+        # Por hora, esta classe é apenas simulada
+        # Considerando os primeiros 5 animais
+        for i in self.animais:
+            self.top5.append(i)
+            if len(self.top5) >= 5:
+                break
 
     def exportar(self):
         """Retorna um relatório estruturado como dicionário"""
-        if not self.__top5:
+        if not self.top5:
             raise RelatorioNaoGeradoError()
 
         # Retorna um dicionário com as informações
         return {
+            "id": self.id,
             "nome": self.nome,
+            "data": self.data.__str__(),
             "animais": get_dict_list(self.animais),
             "adotantes": get_dict_list(self.adotantes),
-            "top5": self.__top5,
+            "top5": get_dict_list(self.top5),
         }
 
     def __str__(self) -> str:
@@ -105,10 +142,14 @@ class TaxaAdocaoEspecies(Relatorio):
         taxas (dict): Dicionário que armazena os pares de chave e valor {"Animal": "adotados/Total"}
     """
 
-    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao]):
+    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao], taxas={}):
         super().__init__(id=id, data=data, nome=nome)
         self.adocoes: list[Adocao] = adocoes
-        self.__taxas: dict[str, str] = {}
+        self.taxas: dict[str, str] = taxas
+
+    @classmethod
+    def from_dict(cls, relatorio:dict):
+        return cls(**relatorio)
 
     def gerar(self):
         """Gere um dicionário que armazena os pares de chave e valor {"Animal": "adotados/Total"}
@@ -116,10 +157,10 @@ class TaxaAdocaoEspecies(Relatorio):
 
         # Dicionário para mapear a quantidade de cada animal
         totais = {
-            type(Cachorro).__name__: 0,
-            type(Calopsita).__name__: 0,
-            type(Coelho).__name__: 0,
-            type(Gato).__name__: 0,
+            "Cachorro": 0,
+            "Calopsita": 0,
+            "Coelho": 0,
+            "Gato": 0,
         }
 
         # Contagem via tipagem dos animais na lista
@@ -129,26 +170,24 @@ class TaxaAdocaoEspecies(Relatorio):
         total_adocoes = len(self.adocoes)
 
         # Armazenando os dados no atributo
-        self.__taxas = {
-            type(
-                Cachorro
-            ).__name__: f"{totais[type(Cachorro).__name__]}/{total_adocoes}",
-            type(
-                Calopsita
-            ).__name__: f"{totais[type(Calopsita).__name__]}/{total_adocoes}",
-            type(Coelho).__name__: f"{totais[type(Coelho).__name__]}/{total_adocoes}",
-            type(Gato).__name__: f"{totais[type(Gato).__name__]}/{total_adocoes}",
+        self.taxas = {
+            "Cachorro": f"{totais["Cachorro"]}/{total_adocoes}",
+            "Calopsita": f"{totais["Calopsita"]}/{total_adocoes}",
+            "Coelho": f"{totais["Coelho"]}/{total_adocoes}",
+            "Gato": f"{totais["Gato"]}/{total_adocoes}",
         }
 
     def exportar(self) -> dict:
         """Retorna um relatório estruturado como dicionário"""
-        if not self.__taxas:
+        if not self.taxas:
             raise RelatorioNaoGeradoError()
 
         return {
+            "id": self.id,
             "nome": self.nome,
+            "data": self.data.__str__(),
             "adocoes": get_dict_list(self.adocoes),
-            "taxas": self.__taxas,
+            "taxas": self.taxas,
         }
 
     def __str__(self) -> str:
@@ -166,10 +205,14 @@ class TaxaAdocaoPorte(Relatorio):
         taxas (dict): Dicionário que armazenas os pares de chave e valor {"Porte": "adotados/Total"}
     """
 
-    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao]):
+    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao], taxas={}):
         super().__init__(id=id, data=data, nome=nome)
         self.adocoes: list[Adocao] = adocoes
-        self.__taxas: dict[str, str] = {}
+        self.taxas: dict[str, str] = taxas
+
+    @classmethod
+    def from_dict(cls, relatorio:dict):
+        return cls(**relatorio)
 
     def gerar(self):
         """Gere um dicionário que armazena os pares de chave e valor {"Animal": "adotados/Total"}
@@ -183,7 +226,7 @@ class TaxaAdocaoPorte(Relatorio):
 
         total_adocoes = len(self.adocoes)
 
-        self.__taxas = {
+        self.taxas = {
             Porte.P.value: f"{totais[Porte.P.value]}/{total_adocoes}",
             Porte.M.value: f"{totais[Porte.M.value]}/{total_adocoes}",
             Porte.G.value: f"{totais[Porte.G.value]}/{total_adocoes}",
@@ -191,13 +234,15 @@ class TaxaAdocaoPorte(Relatorio):
 
     def exportar(self) -> dict:
         """Retorna um relatório estruturado como dicionário"""
-        if not self.__taxas:
+        if not self.taxas:
             raise RelatorioNaoGeradoError()
 
         return {
+            "id": self.id,
             "nome": self.nome,
+            "data": self.data.__str__(),
             "adocoes": get_dict_list(self.adocoes),
-            "taxas": self.__taxas,
+            "taxas": self.taxas,
         }
 
     def __str__(self) -> str:
@@ -215,10 +260,14 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
         tempo_medio_meses (int): Tempo médio em meses.
     """
 
-    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao]):
+    def __init__(self, *, id: int, data: datetime, nome: str, adocoes: list[Adocao], tempo_medio_meses=None):
         super().__init__(id=id, data=data, nome=nome)
         self.adocoes: list[Adocao] = adocoes
-        self.__tempo_media_meses: int = 0
+        self.tempo_medio_meses: int | None = tempo_medio_meses
+
+    @classmethod
+    def from_dict(cls, relatorio:dict):
+        return cls(**relatorio)
 
     def gerar(self):
         """Gera o tempo média entre entrada e adoção dos adotados"""
@@ -232,17 +281,23 @@ class TaxaTempoMedioEntradaAdocao(Relatorio):
                 soma -= 1
 
         # Divide pela quantidade para obter o tempo médio
-        self.__tempo_media_meses = soma / len(self.adocoes)
+        total_adocoes = len(self.adocoes)
+        if total_adocoes != 0:
+            self.tempo_medio_meses = soma / total_adocoes
+        else:
+            self.tempo_medio_meses = 0
 
     def exportar(self):
         """Retorna um relatório estruturado como dicionário"""
-        if not self.__tempo_media_meses:
+        if self.tempo_medio_meses is None:
             raise RelatorioNaoGeradoError()
 
         return {
+            "id": self.id,
             "nome": self.nome,
+            "data": self.data.__str__(),
             "adocoes": get_dict_list(self.adocoes),
-            "tempo_medio_meses": self.__tempo_media_meses,
+            "tempo_medio_meses": self.tempo_medio_meses,
         }
 
     def __str__(self) -> str:
@@ -269,26 +324,33 @@ class TaxaDevolucoes(Relatorio):
         nome: str,
         adocoes: list[Adocao],
         devolucoes: list[Devolucao],
+        taxa = ""
     ):
         super().__init__(id=id, data=data, nome=nome)
         self.adocoes: list[Adocao] = adocoes
         self.devolucoes: list[Devolucao] = devolucoes
-        self.__taxa: str = ""
+        self.taxa: str = taxa
+
+    @classmethod
+    def from_dict(cls, relatorio:dict):
+        return cls(**relatorio)
 
     def gerar(self):
         """Calcula a taxa de devoluções por adoção"""
-        self.__taxa = f"{((len(self.devolucoes) / len(self.adocoes)) * 100):.2f}%"
+        self.taxa = f"{((len(self.devolucoes) / len(self.adocoes)) * 100):.2f}%"
 
     def exportar(self):
         """Retorna um relatório estruturado como dicionário"""
-        if not self.__taxa:
+        if not self.taxa:
             raise RelatorioNaoGeradoError()
 
         return {
+            "id": self.id,
             "nome": self.nome,
+            "data": self.data.__str__(),
             "adocoes": get_dict_list(self.adocoes),
             "devolucoes": get_dict_list(self.devolucoes),
-            "taxa": self.__taxa,
+            "taxa": self.taxa,
         }
 
     def __str__(self) -> str:
