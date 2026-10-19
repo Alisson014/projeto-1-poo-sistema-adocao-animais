@@ -35,6 +35,17 @@ class Registro:
     def adotante(self) -> Adotante:
         return self.__adotante
 
+    @classmethod
+    def from_dict(cls, registro:dict):
+        pass
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "animal": self.animal.id,
+            "adotante": self.adotante.email,
+        }
+
     def __eq__(self, outro_registro: object):
         if not isinstance(outro_registro, Registro):
             return NotImplemented
@@ -66,8 +77,8 @@ class Reserva(Registro):
         compatibilidade: float,
     ):
         super().__init__(id=id, animal=animal, adotante=adotante)
-        self.data_inicial: datetime = data_inicial
-        self.data_expiracao: datetime = data_expiracao
+        self.data_inicial: datetime = datetime.fromisoformat(data_inicial) if isinstance(data_inicial, str) else data_inicial
+        self.data_expiracao: datetime = datetime.fromisoformat(data_expiracao) if isinstance(data_expiracao, str) else data_expiracao
         self.status: StatusReserva = status  # property setter (privado)
         self.compatibilidade: float = compatibilidade
 
@@ -85,6 +96,19 @@ class Reserva(Registro):
                 self.__status = StatusReserva(status)
         except ValueError:
             raise TipagemError("StatusReserva", status)
+
+    @classmethod
+    def from_dict(cls, registro:dict):
+        return cls(**registro)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "data_inicial": self.data_inicial.__str__(),
+            "data_expiracao": self.data_expiracao.__str__(),
+            "status": self.status,
+            "compatibilidade": self.compatibilidade,
+        }
 
     def __str__(self) -> str:
         return f"Reserva de {type(self.animal).__name__} {self.animal.nome} por {self.adotante.nome} em {self.data_inicial.day}/{self.data_inicial.month}/{self.data_inicial.year}"
@@ -116,13 +140,21 @@ class Adocao(Registro):
         data: datetime,
     ):
         super().__init__(id=id, animal=animal, adotante=adotante)
-        self.__taxa: float = taxa  # Pode apenas ser lido
+        self.taxa: float = taxa
         self.pago: bool = pago
-        self.data: datetime = data
+        self.data: datetime = datetime.fromisoformat(data) if isinstance(data, str) else data
 
-    @property
-    def taxa(self) -> float:
-        return self.__taxa
+    @classmethod
+    def from_dict(cls, registro:dict):
+        return cls(**registro)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "taxa": self.taxa,
+            "pago": self.pago,
+            "data": self.data.__str__(),
+        }
 
     def calcular_taxa(self):
         """Método para calcular a taxa de uma adoção"""
@@ -130,7 +162,7 @@ class Adocao(Registro):
 
     def gerar_contrato(self) -> str:
         """Retorna o contrato da adoção"""
-        return f"Adoção realizada em {self.data.day}/{self.data.month}/{self.data.year}\nValor da taxa:R$ {self.__taxa:.2f}\nPago: {'Sim' if self.pago else 'Não'}"
+        return f"Adoção realizada em {self.data.day}/{self.data.month}/{self.data.year}\nValor da taxa:R$ {self.taxa:.2f}\nPago: {'Sim' if self.pago else 'Não'}"
 
     def registrar_pagamento(self) -> None:
         self.pago = True
@@ -140,6 +172,7 @@ class Adocao(Registro):
 
     def __repr__(self) -> str:
         return f"Adocao(id={self.id}, animal={repr(self.animal)}, adotante={repr(self.adotante)}, taxa={self.taxa}, pago={self.pago}, data={self.data})"
+
 
 class Devolucao(Registro):
     """Classe para modelar devoluções no sistema
@@ -163,7 +196,7 @@ class Devolucao(Registro):
     ):
         super().__init__(id=id, animal=animal, adotante=adotante)
         self.motivo: MotivoDevolucao = motivo  # property setter (privado)
-        self.data: datetime = data
+        self.data: datetime = datetime.fromisoformat(data) if isinstance(data, str) else data
 
     # __motivo possui getter e setter para garantir validação da tipagem
     @property
@@ -179,6 +212,17 @@ class Devolucao(Registro):
                 self.__motivo = MotivoDevolucao(motivo)
         except ValueError:
             raise TipagemError("MotivoDevolucao", motivo)
+
+    @classmethod
+    def from_dict(cls, registro:dict):
+        return cls(**registro)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            "motivo": self.motivo,
+            "data": self.data.__str__(),
+        }
 
     def __str__(self) -> str:
         return f"Devolução de {type(self.animal).__name__} {self.animal.nome} por {self.adotante.nome} em {self.data.day}/{self.data.month}/{self.data.year} por motivo de {self.motivo}"

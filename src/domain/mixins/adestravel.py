@@ -16,8 +16,7 @@ class AdestravelMixin:
             raise ValorForaDoIntervaloError("nivel_adestramento", nivel_adestramento)
 
         # apenas leitura ou alteração via adestrar (privado)
-        self.__nivel_adestramento: int = nivel_adestramento  
-        
+        self.__nivel_adestramento: int = nivel_adestramento
 
     @property
     def nivel_adestramento(self):

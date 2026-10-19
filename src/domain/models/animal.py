@@ -8,7 +8,8 @@ from src.domain.exceptions import (
     NaoEncontradoError,
 )
 
-from datetime import datetime
+from datetime import datetime, date
+from abc import abstractmethod
 
 
 class Animal:
@@ -48,7 +49,7 @@ class Animal:
         historico: list[Evento] = [],
         temperamento: list[str] = [],
     ):
-        self.__id: int = id  # O id de um elemento não pode ser alterado, apenas lido
+        self.__id: int = int(id)  # O id de um elemento não pode ser alterado, apenas lido
         self.especie: str = especie
         self.nome: str = nome
         self.sexo: Sexo = sexo  # property setter (privado)
@@ -62,7 +63,7 @@ class Animal:
             temperamento  # property setter (privado)
         )
         self.cuidado_especial: bool = cuidado_especial
-    
+
     # ====================
     # Properties
     # ====================
@@ -179,6 +180,16 @@ class Animal:
     # Métodos
     # ====================
 
+    # Método de classe abstrato para ser reescrito pelas classes filhas
+    @classmethod
+    def from_dict(cls, animal: dict):
+        pass
+
+    # Método abstrato para ser reescrito pelas classes filhas:
+    @abstractmethod
+    def to_dict(self):
+        pass
+
     def envelhecer(self) -> None:
         """Aumenta a idade em meses do animal com base na data de entrada"""
         data_atual: datetime = datetime.now()
@@ -194,7 +205,9 @@ class Animal:
 
         # A idade é incrementada apenas se a idade do animal não estiver atualizada
         # Evita que um animal envelheça se a idade registrada já bater com a idade real
-        self.__idade_meses += incremento if self.__idade_meses + incremento != self.__idade_meses else 0
+        self.__idade_meses += (
+            incremento if self.__idade_meses + incremento != self.__idade_meses else 0
+        )
 
     def adicionar_evento(self, evento: Evento) -> None:
         """Adiciona um evento ao histórico do animal"""
@@ -224,12 +237,19 @@ class Animal:
 
         raise NaoEncontradoError(type(evento).__name__)
 
+    def get_temperamento(self) -> list[str]:
+        res = []
+        for i in self.temperamento:
+            res.append(i.value)
+
+        return res
+
     def get_historico(self) -> list[dict]:
         """Retorna o histórico do animal em uma lista de dicionários"""
         res = []  # variável com o conteúdo retornado
         for i in self.__historico:
             # Converte cada evento do histórico para um dicionário
-            res.append(i.__dict__)
+            res.append(i.to_dict())
 
         return res
 
@@ -244,7 +264,7 @@ class Animal:
         except AttributeError:
             return True
 
-        # Dicionário que associa cada status a uma lista com as transições 
+        # Dicionário que associa cada status a uma lista com as transições
         # permitidas para o respectivo status
         transicoes_validas = {
             StatusAnimal.DISPONIVEL.value: [
@@ -319,7 +339,9 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
             status=status,
             energia=energia,
             cuidado_especial=cuidado_especial,
-            data_entrada=data_entrada,
+            data_entrada=datetime.fromisoformat(data_entrada)
+            if isinstance(data_entrada, str)
+            else data_entrada,
             historico=historico,
             temperamento=temperamento,
         )
@@ -328,6 +350,42 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
         self.raca: str = raca
         self.passeios_necessarios_dia: int = passeios_necessarios_dia
 
+    @classmethod
+    def from_dict(cls, animal: dict):
+        # Converte os dicionários de vacinas em instâncias
+        key_vacinas = animal.pop("vacinas")
+        vacinas: list[Vacina] = []
+        for i in key_vacinas:
+            vacinas.append(Vacina.from_dict(i))
+
+        # Converte os dicionários de eventos em instâncias
+        key_historico = animal.pop("historico")
+        historico: list[Evento] = []
+        for i in key_historico:
+            historico.append(Evento.from_dict(i))
+
+        return cls(**animal, vacinas=vacinas, historico=historico)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "especie": self.especie,
+            "nome": self.nome,
+            "sexo": self.sexo,
+            "idade_meses": self.idade_meses,
+            "porte": self.porte,
+            "status": self.status,
+            "energia": self.energia,
+            "cuidado_especial": self.cuidado_especial,
+            "data_entrada": self.data_entrada.__str__(),
+            "historico": self.get_historico(),
+            "temperamento": self.get_temperamento(),
+            "nivel_adestramento": self.nivel_adestramento,
+            "vacinas": [vacina.to_dict() for vacina in self.vacinas],
+            "raca": self.raca,
+            "passeios_necessarios_dia": self.passeios_necessarios_dia,
+        }
+
     def __str__(self) -> str:
         return f"Cachorro {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
 
@@ -335,7 +393,7 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
         string = "Cachorro("
 
         # Itera sobre os atributos de self e adiciona todos programáticamente
-        for key, value in vars(self).items():
+        for key, value in self.to_dict().items():
             string += f"{key}={value}, "
 
         # Elimina o espaço do último atributo
@@ -344,12 +402,12 @@ class Cachorro(Animal, AdestravelMixin, VacinavelMixin):
 
         return string
 
-    def __eq__(self, outro_animal:object) -> bool:
+    def __eq__(self, outro_animal: object) -> bool:
         if not isinstance(outro_animal, Cachorro):
             return NotImplemented
         return self.id == outro_animal.id
 
-    def __lt__(self, outro_animal:object) -> bool:
+    def __lt__(self, outro_animal: object) -> bool:
         """Utilizado para verificar se um animal é mais novo que outro"""
         if not isinstance(outro_animal, Cachorro):
             return NotImplemented
@@ -386,7 +444,7 @@ class Calopsita(Animal, AdestravelMixin):
     ):
         Animal.__init__(
             self,
-            id=id,
+            id=(id),
             especie=especie,
             nome=nome,
             sexo=sexo,
@@ -395,7 +453,9 @@ class Calopsita(Animal, AdestravelMixin):
             status=status,
             energia=energia,
             cuidado_especial=cuidado_especial,
-            data_entrada=data_entrada,
+            data_entrada=datetime.fromisoformat(data_entrada)
+            if isinstance(data_entrada, str)
+            else data_entrada,
             historico=historico,
             temperamento=temperamento,
         )
@@ -410,29 +470,60 @@ class Calopsita(Animal, AdestravelMixin):
     def ensinar_a_cantar(self):
         self.__canta = True
 
+    @classmethod
+    def from_dict(cls, animal: dict):
+        # Converte os dicionários de eventos em instâncias
+        key_historico = animal.pop("historico")
+        historico: list[Evento] = []
+        for i in key_historico:
+            historico.append(Evento.from_dict(i))
+
+        return cls(**animal, historico=historico)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "especie": self.especie,
+            "nome": self.nome,
+            "sexo": self.sexo,
+            "idade_meses": self.idade_meses,
+            "porte": self.porte,
+            "status": self.status,
+            "energia": self.energia,
+            "cuidado_especial": self.cuidado_especial,
+            "data_entrada": self.data_entrada.__str__(),
+            "historico": self.get_historico(),
+            "temperamento": self.get_temperamento(),
+            "nivel_adestramento": self.nivel_adestramento,
+            "canta": self.canta,
+        }
+
     def __str__(self) -> str:
-        return f"Calopsita {self.nome} {self.sexo}. É {self.energia} e está {self.status}"
+        return (
+            f"Calopsita {self.nome} {self.sexo}. É {self.energia} e está {self.status}"
+        )
 
     def __repr__(self) -> str:
         string = "Calopsita("
         # Itera sobre os atributos de self e adiciona todos programáticamente
-        for key, value in vars(self).items():
+        for key, value in self.to_dict().items():
             string += f"{key}={value}, "
         # Elimina o espaço do último atributo
         string.rstrip()
         string += ")"
         return string
 
-    def __eq__(self, outro_animal:object) -> bool:
-            if not isinstance(outro_animal, Calopsita):
-                return NotImplemented
-            return self.id == outro_animal.id
-    
-    def __lt__(self, outro_animal:object) -> bool:
+    def __eq__(self, outro_animal: object) -> bool:
+        if not isinstance(outro_animal, Calopsita):
+            return NotImplemented
+        return self.id == outro_animal.id
+
+    def __lt__(self, outro_animal: object) -> bool:
         """Utilizado para verificar se um animal é mais novo que outro"""
         if not isinstance(outro_animal, Calopsita):
             return NotImplemented
         return self.idade_meses < outro_animal.idade_meses
+
 
 class Coelho(Animal, AdestravelMixin, VacinavelMixin):
     """Classe para modelar coelhos no sistema
@@ -476,7 +567,9 @@ class Coelho(Animal, AdestravelMixin, VacinavelMixin):
             status=status,
             energia=energia,
             cuidado_especial=cuidado_especial,
-            data_entrada=data_entrada,
+            data_entrada=datetime.fromisoformat(data_entrada)
+            if isinstance(data_entrada, str)
+            else data_entrada,
             historico=historico,
             temperamento=temperamento,
         )
@@ -497,25 +590,61 @@ class Coelho(Animal, AdestravelMixin, VacinavelMixin):
             raise ValorForaDoIntervaloError("tamanho_gaiola_m3", tamanho_gaiola_m3)
         self.__tamanho_gaiola_m3 = tamanho_gaiola_m3
 
+    @classmethod
+    def from_dict(cls, animal: dict):
+        # Converte os dicionários de vacinas em instâncias
+        key_vacinas = animal.pop("vacinas")
+        vacinas: list[Vacina] = []
+        for i in key_vacinas:
+            vacinas.append(Vacina.from_dict(i))
+
+        # Converte os dicionários de eventos em instâncias
+        key_historico = animal.pop("historico")
+        historico: list[Evento] = []
+        for i in key_historico:
+            historico.append(Evento.from_dict(i))
+
+        return cls(**animal, vacinas=vacinas, historico=historico)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "especie": self.especie,
+            "nome": self.nome,
+            "sexo": self.sexo,
+            "idade_meses": self.idade_meses,
+            "porte": self.porte,
+            "status": self.status,
+            "energia": self.energia,
+            "cuidado_especial": self.cuidado_especial,
+            "data_entrada": self.data_entrada.__str__(),
+            "historico": self.get_historico(),
+            "temperamento": self.get_temperamento(),
+            "nivel_adestramento": self.nivel_adestramento,
+            "vacinas": [vacina.to_dict() for vacina in self.vacinas],
+            "raca": self.raca,
+            "tamanho_gaiola_m3": self.tamanho_gaiola_m3,
+        }
+
     def __str__(self) -> str:
         return f"Coelho {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
 
     def __repr__(self) -> str:
         string = "Coelho("
         # Itera sobre os atributos de self e adiciona todos programáticamente
-        for key, value in vars(self).items():
+        for key, value in self.to_dict().items():
             string += f"{key}={value}, "
         # Elimina o espaço do último atributo
         string.rstrip()
         string += ")"
         return string
 
-    def __eq__(self, outro_animal:object) -> bool:
+    def __eq__(self, outro_animal: object) -> bool:
         if not isinstance(outro_animal, Coelho):
             return NotImplemented
         return self.id == outro_animal.id
 
-    def __lt__(self, outro_animal:object) -> bool:
+    def __lt__(self, outro_animal: object) -> bool:
         """Utilizado para verificar se um animal é mais novo que outro"""
         if not isinstance(outro_animal, Coelho):
             return NotImplemented
@@ -564,7 +693,9 @@ class Gato(Animal, AdestravelMixin, VacinavelMixin):
             status=status,
             energia=energia,
             cuidado_especial=cuidado_especial,
-            data_entrada=data_entrada,
+            data_entrada=datetime.fromisoformat(data_entrada)
+            if isinstance(data_entrada, str)
+            else data_entrada,
             historico=historico,
             temperamento=temperamento,
         )
@@ -573,9 +704,45 @@ class Gato(Animal, AdestravelMixin, VacinavelMixin):
         self.raca: str = raca
         self.independencia: bool = independencia
 
+    @classmethod
+    def from_dict(cls, animal: dict):
+        # Converte os dicionários de vacinas em instâncias
+        key_vacinas = animal.pop("vacinas")
+        vacinas: list[Vacina] = []
+        for i in key_vacinas:
+            vacinas.append(Vacina.from_dict(i))
+
+        # Converte os dicionários de eventos em instâncias
+        key_historico = animal.pop("historico")
+        historico: list[Evento] = []
+        for i in key_historico:
+            historico.append(Evento.from_dict(i))
+
+        return cls(**animal, vacinas=vacinas, historico=historico)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "especie": self.especie,
+            "nome": self.nome,
+            "sexo": self.sexo,
+            "idade_meses": self.idade_meses,
+            "porte": self.porte,
+            "status": self.status,
+            "energia": self.energia,
+            "cuidado_especial": self.cuidado_especial,
+            "data_entrada": self.data_entrada.__str__(),
+            "historico": self.get_historico(),
+            "temperamento": self.get_temperamento(),
+            "nivel_adestramento": self.nivel_adestramento,
+            "vacinas": [vacina.to_dict() for vacina in self.vacinas],
+            "raca": self.raca,
+            "independencia": self.independencia,
+        }
+
     def __str__(self) -> str:
-            return f"Gato {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
-    
+        return f"Gato {self.nome}, {self.raca} {self.sexo}. É {self.energia} e está {self.status}"
+
     def __repr__(self) -> str:
         string = "Gato("
         # Itera sobre os atributos de self e adiciona todos programáticamente
@@ -586,12 +753,12 @@ class Gato(Animal, AdestravelMixin, VacinavelMixin):
         string += ")"
         return string
 
-    def __eq__(self, outro_animal:object) -> bool:
+    def __eq__(self, outro_animal: object) -> bool:
         if not isinstance(outro_animal, Gato):
             return NotImplemented
         return self.id == outro_animal.id
 
-    def __lt__(self, outro_animal:object) -> bool:
+    def __lt__(self, outro_animal: object) -> bool:
         """Utilizado para verificar se um animal é mais novo que outro"""
         if not isinstance(outro_animal, Gato):
             return NotImplemented
