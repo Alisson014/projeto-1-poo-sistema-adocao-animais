@@ -122,8 +122,8 @@ adotante = Adotante(
     area_util=50,
 )
 
-PessoaRespository(adotante_path, Adotante).create(adotante)
-adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email)  # type: ignore[arg-type]
+PessoaRespository(adotante_path, Adotante).create(adotante) # type: ignore[arg-type]
+adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email)  # type: ignore[arg-type, assignment]
 
 
 # Funções auxiliares para criar instâncias novas.
@@ -254,7 +254,7 @@ def test_delete_by_id_inexistente_top5():
 CASOS_TAXA_ADOCAO = {
     "especies": (taxa_especies_repository, criar_taxa_especies, TaxaAdocaoEspecies),
     "porte": (taxa_porte_repository, criar_taxa_porte, TaxaAdocaoPorte),
-    "tempo_medio": (
+    "tempo_medio": ( # type: ignore[dict-item]
         taxa_tempo_medio_repository,
         criar_taxa_tempo_medio,
         TaxaTempoMedioEntradaAdocao,

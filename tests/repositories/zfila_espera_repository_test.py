@@ -27,9 +27,9 @@ fila_path = "tests/data/fila_espera/fila_espera_teste.json"
 for pasta in ("animal", "pessoa", "fila_espera"):
     Path(f"tests/data/{pasta}").mkdir(parents=True, exist_ok=True)
 
-fila_repository = FilaEsperaRepository(fila_path, Cachorro, cachorro_path, adotante_path)
-animal_repository = AnimalRepository(cachorro_path, Cachorro)
-adotante_repository = PessoaRespository(adotante_path, Adotante)
+fila_repository = FilaEsperaRepository(fila_path, Cachorro, cachorro_path, adotante_path) # type: ignore[arg-type]
+animal_repository = AnimalRepository(cachorro_path, Cachorro) # type: ignore[arg-type]
+adotante_repository = PessoaRespository(adotante_path, Adotante) # type: ignore[arg-type]
 
 
 # Funções auxiliares
@@ -119,7 +119,8 @@ def test_pre_requisitos_persistidos():
 
 # fila=[] explícito: o comportamento de fila=None é testado separadamente
 fila = FilaEspera(animal=cachorro, fila=[])
-fila.add(adotante)
+if adotante:
+    fila.add(adotante)
 
 def test_create_fila():
     assert fila_repository.create(fila)

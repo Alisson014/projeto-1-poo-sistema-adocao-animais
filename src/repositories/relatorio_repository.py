@@ -58,7 +58,7 @@ class Top5MaisAdotaveisRepository(RelatorioRepository):
         if relatorios.get(str(relatorio.id)):
             raise Exception(f"{relatorio.id} já cadastrado")
 
-        animais = {
+        animais: dict[str, list] = {
             "Cachorro": [],
             "Calopsita": [],
             "Coelho": [],
@@ -148,7 +148,7 @@ class Top5MaisAdotaveisRepository(RelatorioRepository):
             raise NaoCadastradoError(f"Top5MaisAdotaveis({new_relatorio.id})", self.path.__str__())
 
 
-        animais = {
+        animais: dict[str, list] = {
             "Cachorro": [],
             "Calopsita": [],
             "Coelho": [],
