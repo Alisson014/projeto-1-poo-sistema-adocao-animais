@@ -19,8 +19,11 @@ class Evento:
     def __init__(self, *, tipo: str, descricao: str, data: datetime):
         self.tipo: TipoEvento = tipo  # property setter (privado)
         self.descricao: str = descricao
-        self.data: datetime = data
+        self.data: datetime = (
+            datetime.fromisoformat(data) if isinstance(data, str) else data
+        )
 
+    # __tipo possui getter e setter para garantir validação da tipagem
     @property
     def tipo(self):
         return self.__tipo.value
@@ -28,16 +31,35 @@ class Evento:
     @tipo.setter
     def tipo(self, tipo: str):
         try:
+            # Se não for válido, essa verificação dispara um erro
+            # Evitando que o estado seja alterado
             if isinstance(TipoEvento(tipo), TipoEvento):
+                # Valida se a string é um TipoEvento válido
                 self.__tipo = TipoEvento(tipo)
         except ValueError:
             raise TipagemError("TipoEvento", tipo)
+
+    @classmethod
+    def from_dict(cls, evento: dict):
+        return cls(**evento)
+
+    def to_dict(self):
+        return {
+            "tipo": self.tipo,
+            "descricao": self.descricao,
+            "data": self.data.__str__(),
+        }
 
     def __str__(self) -> str:
         return f"Evento de {self.tipo}, {self.data} {self.descricao}"
 
     def __repr__(self) -> str:
-        return f"Evento(tipo={self.tipo}, descricao={self.descricao})"
+        return f"Evento(tipo={self.tipo}, data={self.data} descricao={self.descricao})"
+
+    def __eq__(self, outro_evento: object) -> bool:
+        if not isinstance(outro_evento, Evento):
+            return NotImplemented
+        return repr(self) == repr(outro_evento)
 
 
 class Vacina:
@@ -51,12 +73,26 @@ class Vacina:
         data (datetime): Data de aplicação.
     """
 
-    def __init__(self, *, nome: str, data: datetime):
+    def __init__(self, *, nome: str, data: datetime = datetime.now()):
         self.nome: str = nome
-        self.data: datetime = data
+        self.data: datetime = (
+            datetime.fromisoformat(data) if isinstance(data, str) else data
+        )
+
+    @classmethod
+    def from_dict(cls, vacina: dict):
+        return cls(**vacina)
+
+    def to_dict(self):
+        return {"nome": self.nome, "data": self.data.__str__()}
 
     def __str__(self) -> str:
         return f"Vacina {self.nome} aplicada em {self.data.day}/{self.data.month}/{self.data.year}"
 
     def __repr__(self) -> str:
         return f"Vacina(nome={self.nome}, data={self.data})"
+
+    def __eq__(self, outra_vacina: object) -> bool:
+        if not isinstance(outra_vacina, Vacina):
+            return NotImplemented
+        return repr(self) == repr(outra_vacina)

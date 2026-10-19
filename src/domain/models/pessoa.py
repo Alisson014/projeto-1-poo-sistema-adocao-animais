@@ -23,12 +23,14 @@ class Pessoa:
         self.email: str = email  # property setter (privado)
         self.idade: int = idade  # property setter (privado)
 
+    # __email possui getter e setter para ganrantir validação
     @property
     def email(self) -> str:
         return self.__email
 
     @email.setter
     def email(self, email: str) -> None:
+        # Validação do email com regras mínimas
         if (
             (not "@" in email)
             or (not "." in email[email.index("@") + 1 :])
@@ -38,6 +40,7 @@ class Pessoa:
             raise EmailInvalidoError(email)
         self.__email = email
 
+    # __idade possui getter e setter para garantir validação
     @property
     def idade(self) -> int:
         return self.__idade
@@ -47,6 +50,18 @@ class Pessoa:
         if idade < 0:
             raise ValorForaDoIntervaloError("idade", idade)
         self.__idade: int = idade
+
+    @classmethod
+    def from_dict(cls, pessoa:dict):
+        pass
+
+    def to_dict(self) -> dict: # type: ignore[empty-body]
+        pass
+
+    def __eq__(self, outra_pessoa: object) -> bool:
+        if not isinstance(outra_pessoa, Pessoa):
+            return NotImplemented
+        return self.email == outra_pessoa.email
 
 
 class Adotante(Pessoa):
@@ -93,6 +108,8 @@ class Adotante(Pessoa):
     @moradia.setter
     def moradia(self, moradia: str) -> None:
         try:
+            # Valida se a moradia é válida
+            # Um erro é disparado se não for a o atributo não é alterado
             if isinstance(Moradia(moradia), Moradia):
                 self.__moradia = Moradia(moradia)
         except ValueError:
@@ -106,6 +123,8 @@ class Adotante(Pessoa):
     @experiencia.setter
     def experiencia(self, experiencia: str) -> None:
         try:
+            # Valida se a experiência é válida
+            # Um erro é disparado se não for a o atributo não é alterado
             if isinstance(Experiencia(experiencia), Experiencia):
                 self.__experiencia = Experiencia(experiencia)
         except ValueError:
@@ -135,15 +154,32 @@ class Adotante(Pessoa):
 
         self.__area_util = area_util
 
+    @classmethod
+    def from_dict(cls, pessoa:dict):
+        return cls(**pessoa)
+
+    def to_dict(self) -> dict:
+        return {
+            "nome": self.nome,
+            "email": self.email,
+            "idade": self.idade,
+            "moradia": self.moradia,
+            "experiencia": self.experiencia,
+            "tempo_livre_min": self.tempo_livre_min,
+            "possui_criancas": self.possui_criancas,
+            "outros_animais": self.outros_animais,
+            "area_util": self.area_util,
+        }
+
     def __str__(self) -> str:
         return f"Adotante {self.nome}, {self.idade} anos e tem o email {self.email}"
 
     def __repr__(self) -> str:
         string = "Adotante("
-
+        # Itera sobre os atributos de self e adiciona todos programáticamente
         for key, value in vars(self).items():
             string += f"{key}={value}, "
-
+        # Elimina o espaço do último atributo
         string.rstrip()
         string += ")"
         return string

@@ -1,4 +1,5 @@
 from src.domain.models.pessoa import Adotante
+from src.domain.models.animal import Animal
 from src.domain.exceptions import TipagemError, NaoEncontradoError
 
 
@@ -9,31 +10,56 @@ class EntradaFila:
     fina de espera de um animal. Será utilizada em conjunto com a classe FilaEspera.
 
     Attributes:
-        adotante (id - Adotante): id do adotante considerado.
+        adotante (Adotante): Adotante considerado.
         tempo_espera (int): tempo de espera em dias.
         compatibilidade (float): nível de compatibilidade entre o adotante e o animal considerado.
     """
 
-    def __init__(self, *, adotante: dict, tempo_espera: int, compatibilidade: float):
-        self.__adotante: dict = adotante  # Pode ser apenas lido via property getter
+    def __init__(
+        self, *, adotante: Adotante, tempo_espera: int, compatibilidade: float
+    ):
+        self.__adotante: Adotante = adotante  # Pode ser apenas lido via property getter
         self.tempo_espera: int = tempo_espera
-        self.__compatibilidade: float = (
-            compatibilidade  # Pode ser apenas lido via property getter
-        )
+        # Pode ser apenas lido via property getter
+        self.__compatibilidade: float = compatibilidade
 
+    # __adotante não pode ser alterado
     @property
     def adotante(self):
         return self.__adotante
 
+    # __compatibilidade não pode ser alterada
     @property
     def compatibilidade(self):
         return self.__compatibilidade
 
+    @classmethod
+    def from_dict(cls, entrada:dict):
+        return cls(**entrada)
+
+    def to_dict(self):
+        return {
+            "adotante":self.adotante.email,
+            "tempo_espera": self.tempo_espera,
+            "compatibilidade": self.compatibilidade
+        }
+
     def __str__(self) -> str:
-        return f"Entrada para espera de {self.adotante["nome"]}, tempo de espera de {self.tempo_espera} e compatibilidade({self.compatibilidade})"
+        return f"Entrada para espera de {self.adotante.nome}, tempo de espera de {self.tempo_espera} e compatibilidade({self.compatibilidade})"
 
     def __repr__(self) -> str:
-        return f"EntradaFila(adotante={self.adotante}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
+        return f"EntradaFila(adotante={repr(self.adotante)}, tempo_espera={self.tempo_espera}, compatibilidade={self.compatibilidade})"
+
+    def __eq__(self, outra_entrada: object) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
+        return repr(self) == repr(outra_entrada)
+
+    def __lt__(self, outra_entrada) -> bool:
+        if not isinstance(outra_entrada, EntradaFila):
+            return NotImplemented
+        return self.compatibilidade < outra_entrada.compatibilidade
+
 
 class FilaEspera:
     """Classe para modelar filas de espera no sistema
@@ -46,23 +72,38 @@ class FilaEspera:
         fila (List[EntradaFila]): Lista de entradas com interesse no animal.
     """
 
-    def __init__(self, *, animal: int, fila: list[EntradaFila] = []):
-        self.__animal: int = animal  # Pode ser apenas lido via getter
-        self.__fila = fila
+    def __init__(self, *, animal: Animal, fila: list | None = None):
+        self.__animal: Animal = animal  # Pode ser apenas lido via getter
+        self.__fila = fila if fila is not None else []
 
+    # __animal não pode ser alterado
     @property
     def animal(self):
         return self.__animal
 
+    @classmethod
+    def from_dict(cls, fila:dict):
+        return cls(**fila)
+
+    def to_dict(self):
+        return {
+            "animal": self.animal.id,
+            "fila": self.get_fila()
+        }
+
     # Métodos
     def add(self, adotante: Adotante) -> None:
         """Adiciona um adotante à fila de espera"""
-        if not isinstance(adotante, Adotante):
+        
+        if not isinstance(adotante, Adotante): 
             raise TipagemError("Adotante", adotante)
 
-        entrada = EntradaFila(
-            adotante=adotante.__dict__, tempo_espera=0, compatibilidade=100
-        )
+        for i in self.__fila:
+            if i.adotante == adotante:
+                raise Exception("Um adotante não pode estar na mesma fila duas vezes")
+
+        # Cria a entrada e adiciona na fila
+        entrada = EntradaFila(adotante=adotante, tempo_espera=0, compatibilidade=100)
         self.__fila.append(entrada)
 
         ##### Precisa inserir ordenando pelo nível de compatibilidade
@@ -70,13 +111,15 @@ class FilaEspera:
 
     def remove(self, adotante: Adotante):
         """Remove um adotante da fila de espera"""
-        if not isinstance(adotante, Adotante):
+        
+        if not isinstance(adotante, Adotante): 
             raise TipagemError("Adotante", adotante)
+        
 
         for i, e in enumerate(self.__fila):
-            print(e.adotante["_Pessoa__email"])
-            print(adotante.email)
-            if e.adotante["_Pessoa__email"] == adotante.email:
+            # Busca o adotante comparando os emails
+            # Posso implementar isso via __eq__
+            if e.adotante == adotante:
                 self.__fila.pop(i)
                 return
 
@@ -84,6 +127,7 @@ class FilaEspera:
 
     def proximo(self) -> EntradaFila | None:
         """Retorna o próximo adotante na fila de espera"""
+        # Posso implementar o __len__ aqui
         if len(self.__fila) == 0:
             # Retorna None se a fila estiver vazia
             return None
@@ -91,17 +135,36 @@ class FilaEspera:
         # retorna sempre o primeiro
         return self.__fila[0]
 
-    def get_fila(self):
-        """Retorna uma lista de dicionárias das entradas"""
+    def get_fila(self) -> list[dict]:
+        """Retorna uma lista de emails das entradas da fila"""
         res = []
 
         for en in self.__fila:
-            res.append(en.__dict__)
+            res.append(en.to_dict())
 
         return res
 
     def __str__(self) -> str:
-        return f"Fila de Espera do animal {self.animal}"
+        return f"Fila de Espera do animal {self.animal.nome}"
 
     def __repr__(self) -> str:
-        return f"FilaEspera(animal={self.animal}, fila={self.__fila})"
+        return f"FilaEspera(animal={repr(self.animal)}, fila={self.__fila})"
+
+    def __len__(self) -> int:
+        return len(self.__fila)
+
+    def __contains__(self, item) -> bool:
+        if not isinstance(item, EntradaFila):
+            return False
+
+        for i in self.__fila:
+            # Compara via __eq__ de EntradaFila
+            if i == item:
+                return True
+
+        return False
+
+    def __lt__(self, outra_fila) -> bool:
+        if not isinstance(outra_fila, FilaEspera):
+            return NotImplemented
+        return len(self) < len(outra_fila)
