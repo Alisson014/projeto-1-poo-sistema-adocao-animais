@@ -4,8 +4,8 @@ Aqui estão descritas as classes iniciais pensadas para o projeto, juntamente co
 
 Esta descrição é apenas um ponto de partida para o desenvolvimento do projeto, não necessariamente se manterá inauterada até o fim do desenvolvimento.
 
-[Click para visualizar a modelagem de relacionamentos](./uml-relations.md)
-[Click para voltar ao readme](../README.md#-classes-planejadas)
+- [Click para visualizar a modelagem de relacionamentos](./uml-relations.md)
+- [Click para voltar ao readme](../README.md#-classes-planejadas)
 
 ### Sumário:
 * [Animais](#animais);
@@ -43,7 +43,10 @@ classDiagram
         + remover_evento(evento: Evento) -> None;
         + atualizar_status() -> None;
         - __valida_transicao_status() -> bool;
+        + get_temperamento() -> list[str];
         + get_historico() -> List[dict];
+        + from_dict(animal: dict);
+        + to_dict();
     }
 
     class VacinavelMixin {
@@ -60,36 +63,44 @@ classDiagram
     class Cachorro {
         + raca: string;
         + passeios_necessarios_dia: int;
+        + from_dict(animal: dict);
+        + to_dict();
     }
 
     class Gato {
         + raca: string;
         + independencia: bool;
+        + from_dict(animal: dict);
+        + to_dict();
     }
-    
+
     class Coelho {
         + raca: string;
         + tamanho_gaiola_m3: float;
+        + from_dict(animal: dict);
+        + to_dict();
     }
 
     class Calopsita {
         + canta: bool;
         + ensinar_a_cantar() -> None;
+        + from_dict(animal: dict);
+        + to_dict();
     }
 
     %% Relacionamentos
     Animal <|-- Cachorro : Herança (é um)
     VacinavelMixin <|-- Cachorro : Herança (mixin)
     AdestravelMixin <|-- Cachorro : Herança (mixin)
-    
+
     Animal <|-- Gato : Herança (é um)
     VacinavelMixin <|-- Gato : Herança (mixin)
     AdestravelMixin <|-- Gato : Herança (mixin)
-    
+
     Animal <|-- Coelho : Herança (é um)
     VacinavelMixin <|-- Coelho : Herança (mixin)
     AdestravelMixin <|-- Coelho : Herança (mixin)
-    
+
     Animal <|-- Calopsita : Herança (é um)
     AdestravelMixin <|-- Calopsita : Herança (mixin)
 ```
@@ -107,6 +118,8 @@ classDiagram
         + nome: string;
         - email: string;
         + idade: int;
+        + from_dict(pessoa: dict);
+        + to_dict() -> dict;
     }
 
     class Adotante {
@@ -116,6 +129,8 @@ classDiagram
         + possui_criancas: bool;
         + outros_animais: bool;
         + area_util: float;
+        + from_dict(pessoa: dict);
+        + to_dict() -> dict;
     }
 
     %% Relacionamentos:
@@ -135,15 +150,19 @@ classDiagram
         + adotante: Adotante;
         + tempo_espera: int;
         + compatibilidade: float;
+        + from_dict(entrada: dict);
+        + to_dict();
     }
 
     class FilaEspera {
-        + animal: int;
+        + animal: Animal;
         + fila: List[EntradaFila];
         + add(adotante: Adotante) -> None;
         + remove(adotante: Adotante) -> None;
         + proximo() -> EntradaFila;
-        + get_fila() -> list[Adotante];
+        + get_fila() -> list[dict];
+        + from_dict(fila: dict);
+        + to_dict();
     }
 ```    
 
@@ -160,6 +179,8 @@ classDiagram
         + id: int;
         + animal: Animal;
         + adotante: Adotante;
+        + from_dict(registro: dict);
+        + to_dict();
     }
 
     class Reserva {
@@ -167,6 +188,8 @@ classDiagram
         + data_expiracao: datetime;
         + status: ATIVA, CANCELADA, EXPIRADA;
         + compatibilidade: float;
+        + from_dict(registro: dict);
+        + to_dict();
     }
 
     class Adocao {
@@ -176,11 +199,15 @@ classDiagram
         + calcular_taxa() -> None;
         + gerar_contrato() -> str;
         + registrar_pagamento() -> None;
+        + from_dict(registro: dict);
+        + to_dict();
     }
 
     class Devolucao {
         + motivo: COMPORTAMENTO, PESSOAL, DOENCA, OUTRO;
         + data: datetime;
+        + from_dict(registro: dict);
+        + to_dict();
     }
 
     %% Relacionamentos:
@@ -198,11 +225,14 @@ classDiagram
 ```mermaid
 classDiagram
     class Quarentena {
+        + id: int;
         + animal: Animal;
         + data_inicial: datetime;
         + data_final: null | datetime;
         + motivo: COMPORTAMENTO, DOENCA, OUTRO;
         + status: ATIVA, CUMPRIDA;
+        + from_dict(quarentena: dict);
+        + to_dict();
     }
 ```
 
@@ -225,28 +255,33 @@ classDiagram
     class Top5MaisAdotaveis {
         + animais: List[Animal];
         + adotantes: List[Adotante];
-        + top5: List[dict];
+        + top5: List[Animal];
+        + from_dict(relatorio: dict);
     }
 
     class TaxaAdocaoEspecies {
         + adocoes: List[Adocao];
         + taxas: dict;
+        + from_dict(relatorio: dict);
     }
 
     class TaxaAdocaoPorte {
         + adocoes: List[Adocao];
         + taxas: dict;
+        + from_dict(relatorio: dict);
     }
 
     class TaxaTempoMedioEntradaAdocao {
         + adocoes: List[Adocao];
         + tempo_medio_meses: int;
+        + from_dict(relatorio: dict);
     }
 
     class TaxaDevolucoes {
         + adocoes: List[Adocao];
         + devolucoes: List[Devolucao];
         + taxa: string
+        + from_dict(relatorio: dict);
     }
 
     %% Relacionamentos
@@ -270,11 +305,15 @@ classDiagram
         + nome: string;
         + data_modificacao: datetime;
         + validar() -> bool;
+        + to_dict() -> dict;
+        + from_dict(politica: dict);
     }
 
     class IdadeMinima {
         + idade_minima: int;
         + validar(idade) -> bool;
+        + to_dict();
+        + from_dict(politica: dict);
     }
 
     class PorteXArea {
@@ -282,10 +321,15 @@ classDiagram
         + porte_m_min: float;
         + porte_g_min: float;
         + validar(porte, area) -> bool;
+        + to_dict();
+        + from_dict(politica: dict);
     }
 
     class DuracaoReserva {
         + duracao_dias: int;
+        + validar();
+        + to_dict();
+        + from_dict(politica: dict);
     }
 
     class PesosCompatibilidade {
@@ -293,6 +337,9 @@ classDiagram
         + peso_experiencia_temperamento: float;
         + peso_tempo_livre_energia: float;
         + peso_criancas_temperamento: float;
+        + validar();
+        + to_dict();
+        + from_dict(politica: dict);
     }
 
     %% Relacionamentos:
@@ -314,10 +361,14 @@ classDiagram
         + tipo: VACINA, ADOCAO, DEVOLUCAO, QUARENTENA, CONSULTA;
         + descricao: string;
         + data: datetime;
+        + from_dict(evento: dict);
+        + to_dict();
     }
 
     class Vacina {
         + nome: string;
         + data: datetime;
+        + from_dict(vacina: dict);
+        + to_dict();
     }
 ```
