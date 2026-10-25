@@ -1,7 +1,7 @@
 # 🐶 Gerenciamento de Adoção de pets
 
 > **Projeto individual - Programação Orientada a Objetos (2026.2)**  
-> Um sistema de gerenciamento para adoção de animais baseado em _API minimal_, permitindo realizar cadastros, triagens, reservas, adoções, geração de ralatórios, políticas configuráveis, listas de espera, cálculo de taxas e compatibilidade. Além da persistência de dados com o padrão repository, utilizando JSON e SQLite. Foi desenvolvido com o intuito de avaliar os conhecimentos adquiridos ao longo da cadeira.
+> Um sistema de gerenciamento para adoção de animais baseado em _API minimal_, permitindo realizar cadastros, triagens, reservas, adoções, geração de ralatórios, políticas configuráveis, listas de espera, cálculo de taxas e compatibilidade. Além da persistência de dados com o padrão repository, utilizando JSON. Foi desenvolvido com o intuito de avaliar os conhecimentos adquiridos ao longo da cadeira.
 
 
 ## 📌 Sumário:
@@ -20,12 +20,12 @@
 <br>
 
 ## ℹ️ Descrição do projeto:
-O projeto consiste no desenvolvimento de um sistema de adoção de animais baseado em _API Minimal_. Ele conta com uma arquitetura baseada em poo, onde entidades relevantes ao domínio são modeladas em classes para garantir consistência e aplicação de conhecimentos a respeito. O sistema busca simular um ambiente real de adoção de animais, com opções de cadastro, buscas, adoção, gerações de relatórios, contratos e taxas, além de várias outras funcionalidades.
+O projeto consiste no desenvolvimento de um sistema de adoção de animais baseado em _API Minimal_. Ele conta com uma arquitetura baseada em poo, onde entidades relevantes ao domínio são modeladas em classes para garantir consistência e aplicação de conhecimentos a respeito, além de uma divisão clara entre models, repositories e services, para evitar acoplamento entre componentes. O sistema busca simular um ambiente real de adoção de animais, com opções de cadastro, buscas, adoção, gerações de relatórios, contratos e taxas, além de várias outras funcionalidades.
 
 ### Lista de tecnologias utilizada:
 1. `Swagger`;
 2. `FastAPI`;
-3. `Sqlite3`;
+3. `JSON`;
 4. `pytest`;
 5. `mypy`;
 
@@ -88,10 +88,27 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  |    |    ├── enums.py
  |    |    ├── exceptions.py
  |    ├── 📂 repositories
+ |    |    ├── __init__.py
+ |    |    ├── animal_repository.py
+ |    |    ├── fila_espera_repository.py
+ |    |    ├── pessoa_repository.py
+ |    |    ├── quarentena_repository.py
+ |    |    ├── registro_repository.py
+ |    |    ├── relatorio_repository.py
+ |    |    ├── settings_repository.py
  |    ├── 📂 services
  |    ├── 📂 strategies
  ├── 📂 tests
  |    ├── conftest.py
+ |    ├── 📂 repositories
+ |    |    ├── settings.json
+ |    |    ├── __init__.py
+ |    |    ├── 📂 animal
+ |    |    ├── 📂 fila_espera
+ |    |    ├── 📂 pessoa
+ |    |    ├── 📂 quarentena
+ |    |    ├── 📂 registro
+ |    |    ├── 📂 relatorio
  |    ├── 📂 domain
  |    |    ├── 📂 models
  |    |    |    ├── animal_test.py
@@ -101,6 +118,15 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  |    |    |    ├── quarentena_test.py
  |    |    |    ├── registro_test.py
  |    |    |    ├── relatorio_test.py
+ |    ├── 📂 repositories
+ |    |    ├── __init__.py
+ |    |    ├── animal_repository.py
+ |    |    ├── fila_espera_repository.py
+ |    |    ├── pessoa_repository.py
+ |    |    ├── quarentena_repository.py
+ |    |    ├── registro_repository.py
+ |    |    ├── relatorio_repository.py
+ |    |    ├── settings_repository.py
  ├── .gitignore
  ├── main.py  
  ├── README.md
@@ -209,9 +235,11 @@ A estrutura de pastas dos testes segue a estrutura de src
 ```
 Testes unitários visando questões chave como criação de instâncias (casos de sucesso e falha) e reatividade à mudanças de propriedades. Também devem ser verificadas as exceções lançados em casos de verificação de falha.
 
-Contagem de testes atual: `48`
+Para os testes envolvendo persistência de dados, arquivos json são criados na pasta `tests/data`
+
+Contagem de testes atual: `225`
 
 ### Em resumo:
 - `Testes unitários`, `casos de sucesso (intancia)`, `casos de falha (instancia)`, `reaatividade à mudanças`
 
-
+Testes gerados com auxílio de ia generativa foram devidamente declarados em seus respectivos arquivos.
