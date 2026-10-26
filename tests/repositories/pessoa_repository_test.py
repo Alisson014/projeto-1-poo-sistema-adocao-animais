@@ -1,5 +1,6 @@
-from src.domain import Pessoa, Adotante, Cachorro
-from src.repositories import PessoaRespository, AnimalRepository
+from src.domain import Adotante
+from src.repositories import PessoaRespository
+from src.domain.exceptions import NaoCadastradoError
 
 from random import randint
 from pathlib import Path
@@ -8,7 +9,7 @@ import pytest
 # Garante que a pasta dos arquivos fictícios existe
 Path("tests/data/pessoa").mkdir(parents=True, exist_ok=True)
 
-adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante) # type: ignore[arg-type]
+adotante_repository = PessoaRespository("tests/data/pessoa/adotante_teste.json", Adotante)
 
 # Utilizado para a geração dinâmica de emails diferentes (apenas para os testes)
 email = f"email{randint(1, 1000000000)}@gmail.com"
@@ -69,6 +70,6 @@ def test_delete_by_email_adotante():
 
     adotante_repository.delete_by_email(deleted_email)
 
-    with pytest.raises(Exception):
+    with pytest.raises(NaoCadastradoError):
         adotante_repository.get_by_email(deleted_email)
 

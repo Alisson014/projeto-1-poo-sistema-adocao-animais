@@ -57,6 +57,9 @@ class NaoCadastradoError(Exception):
         self.obj = obj
         self.type_obj = type_obj
 
+class PoliticaError(Exception):
+    def __init__(self, name:str):
+        super().__init__(f"Erro de Política: {name}")
 
 # Define explicitamente o que é exportado
 __all__ = [
@@ -66,5 +69,6 @@ __all__ = [
     "NaoEncontradoError",
     "EmailInvalidoError",
     "RelatorioNaoGeradoError",
-    "NaoCadastradoError"
+    "NaoCadastradoError",
+    "PoliticaError"
 ]

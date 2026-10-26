@@ -16,7 +16,7 @@ class PessoaRespository:
         animal_class (Adotante): subclasse considerada
     """
 
-    def __init__(self, path, class_name:Adotante):
+    def __init__(self, path, class_name:type[Adotante]):
         self.path = Path(path)
         self.class_name = class_name
 
@@ -47,11 +47,11 @@ class PessoaRespository:
 
         return [self.class_name.from_dict(pessoas[email]) for email in pessoas.keys()]
 
-    def get_by_email(self, email:str) -> Adotante | None:
+    def get_by_email(self, email:str) -> Adotante:
         pessoas = self.__get_data()
 
         if not pessoas:
-            return None
+            raise NaoCadastradoError(email, "adotante")
 
         if not pessoas.get(email):
             raise NaoCadastradoError(email, "adotante")
@@ -61,7 +61,7 @@ class PessoaRespository:
     def update(self, new_pessoa:Adotante):
         pessoas = self.__get_data()
         if not pessoas.get(new_pessoa.email):
-            raise Exception(f"O email {new_pessoa.email} não existe na base de dados")
+            raise NaoCadastradoError(new_pessoa.email, "adotante")
         
         with self.path.open('w', encoding='utf-8') as file:
 
@@ -72,7 +72,7 @@ class PessoaRespository:
     def delete_by_email(self, email:str):
         pessoas = self.__get_data()
         if not pessoas.get(email):
-            raise Exception(f"O email {email} não existe na base de dados")
+            raise NaoCadastradoError(email, "adotante")
         
         with self.path.open('w', encoding='utf-8') as file:
             pessoas.pop(email)
