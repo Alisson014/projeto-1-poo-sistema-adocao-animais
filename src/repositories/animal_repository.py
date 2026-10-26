@@ -16,7 +16,7 @@ class AnimalRepository:
         animal_class (Cachorro | Calopsita | Coelho | Gato): subclasse considerada
     """
 
-    def __init__(self, path, animal_class: Cachorro | Calopsita | Coelho | Gato):
+    def __init__(self, path, animal_class: type[Cachorro] | type[Calopsita] | type[Coelho] | type[Gato]):
         self.path = Path(path)
         self.animal_class = animal_class
 
@@ -51,7 +51,7 @@ class AnimalRepository:
 
         return res
 
-    def get_by_id(self, id: int) -> Animal | None:
+    def get_by_id(self, id: int) -> Animal:
         animais = self.__get_data()
 
         # Levanta uma exceção caso o id não exista
@@ -60,7 +60,9 @@ class AnimalRepository:
 
         animal = animais[str(id)]
 
-        return self.animal_class.from_dict(animal)
+        res = self.animal_class.from_dict(animal)
+        res.envelhecer()
+        return res
 
     def update(self, new_animal: Animal):
         animais: dict = self.__get_data()
@@ -76,7 +78,7 @@ class AnimalRepository:
         animais = self.__get_data()
 
         if not animais.get(str(id)):
-            raise Exception(f"O id {id} não existe no banco de animais")
+            raise NaoCadastradoError(f"Animal({id})", self.path.__str__())
 
         with self.path.open("w", encoding="utf-8") as file:
 
@@ -94,7 +96,7 @@ class AnimalRepository:
 
             json.dump({}, file, ensure_ascii=False, indent=4)
 
-    def id_generate(self):
+    def generate_id(self):
         animais = self.__get_data()
 
         # O primeiro id é sempre 1
