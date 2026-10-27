@@ -85,7 +85,7 @@ class Quarentena:
             "id": self.id,
             "animal": self.animal.id,
             "data_inicial": self.data_inicial.__str__(),
-            "data_final": self.data_inicial.__str__() if self.data_inicial else None,
+            "data_final": self.data_final.__str__() if self.data_final else None,
             "motivo": self.motivo,
             "status": self.status,
         }

@@ -84,7 +84,7 @@ class Animal:
             # Se não for válido, essa verificação dispara um erro
             # Evitando que o estado seja alterado
             if isinstance(Sexo(sexo), Sexo):
-                # Valida se a string é um Sexo válido
+                # Só atribui se for um sexo válido
                 self.__sexo = Sexo(sexo)
         except ValueError:
             raise TipagemError("Sexo", sexo)
@@ -114,7 +114,7 @@ class Animal:
             # Se não for válido, essa verificação dispara um erro
             # Evitando que o estado seja alterado
             if isinstance(Porte(porte), Porte):
-                # Valida se a string é um Porte válido
+                # So atribui se for válido
                 self.__porte = Porte(porte)
         except ValueError:
             raise TipagemError("Porte", porte)
@@ -211,10 +211,7 @@ class Animal:
 
     def adicionar_evento(self, evento: Evento) -> None:
         """Adiciona um evento ao histórico do animal"""
-        try:
-            # Caso o evento seja inválido um erro é disparado
-            isinstance(evento, Evento)
-        except:
+        if not isinstance(evento, Evento):
             raise TipagemError("Evento", evento)
 
         # O evento só é adicionado se for válido
@@ -222,10 +219,7 @@ class Animal:
 
     def remover_evento(self, evento: Evento) -> None:
         """Remove evento do histórico - Hit com base nos dados do evento"""
-        try:
-            # Caso o evento seja inválido um erro é disparado
-            isinstance(evento, Evento)
-        except:
+        if not isinstance(evento, Evento):
             raise TipagemError("Evento", evento)
 
         for i, e in enumerate(self.__historico):
@@ -270,26 +264,30 @@ class Animal:
             StatusAnimal.DISPONIVEL.value: [
                 StatusAnimal.RESERVADO.value,
                 StatusAnimal.INADOTAVEL.value,
+                StatusAnimal.DISPONIVEL.value
             ],
             StatusAnimal.RESERVADO.value: [
                 StatusAnimal.ADOTADO.value,
                 StatusAnimal.DISPONIVEL.value,
+                StatusAnimal.RESERVADO.value
             ],
-            StatusAnimal.ADOTADO.value: [StatusAnimal.DEVOLVIDO.value],
+            StatusAnimal.ADOTADO.value: [StatusAnimal.DEVOLVIDO.value, StatusAnimal.ADOTADO.value],
             StatusAnimal.DEVOLVIDO.value: [
                 StatusAnimal.QUARENTENA.value,
                 StatusAnimal.DISPONIVEL.value,
                 StatusAnimal.INADOTAVEL.value,
+                StatusAnimal.DEVOLVIDO.value
             ],
             StatusAnimal.QUARENTENA.value: [
                 StatusAnimal.DISPONIVEL.value,
                 StatusAnimal.INADOTAVEL.value,
+                StatusAnimal.QUARENTENA.value
             ],
-            StatusAnimal.INADOTAVEL.value: [],
+            StatusAnimal.INADOTAVEL.value: [StatusAnimal.INADOTAVEL.value],
         }
 
         # Retorna um boolean que indica a validade da operação
-        return status in transicoes_validas[self.__status.value]
+        return status.value in transicoes_validas[self.status]
 
 
 # ----------------------
