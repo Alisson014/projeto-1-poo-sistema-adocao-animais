@@ -55,7 +55,7 @@ class Relatorio(ABC):
 
     def __init__(self, *, id: int, data: datetime, nome: str):
         self.__id: int = id  # Pode ser apenas lido
-        self.data: datetime = data
+        self.data: datetime = datetime.fromisoformat(data) if isinstance(data, str) else data
         self.nome = nome
 
     @property
@@ -91,12 +91,12 @@ class Top5MaisAdotaveis(Relatorio):
         nome: str,
         animais: list[Animal],
         adotantes: list[Adotante],
-        top5: list[Animal]=[]
+        top5: list[Animal]=None
     ):
         super().__init__(id=id, data=data, nome=nome)
         self.animais = animais
         self.adotantes = adotantes
-        self.top5: list[Animal] = top5
+        self.top5: list[Animal] = top5 if top5 is not None else []
 
     @classmethod
     def from_dict(cls, relatorio:dict):
@@ -107,6 +107,7 @@ class Top5MaisAdotaveis(Relatorio):
         # Só pode ser desenvolvido quando eu definir o cálculo de compatibilidade
         # Por hora, esta classe é apenas simulada
         # Considerando os primeiros 5 animais
+        self.top5 = []
         for i in self.animais:
             self.top5.append(i)
             if len(self.top5) >= 5:
@@ -337,7 +338,10 @@ class TaxaDevolucoes(Relatorio):
 
     def gerar(self):
         """Calcula a taxa de devoluções por adoção"""
-        self.taxa = f"{((len(self.devolucoes) / len(self.adocoes)) * 100):.2f}%"
+        if len(self.adocoes):
+            self.taxa = f"{((len(self.devolucoes) / len(self.adocoes)) * 100):.2f}%"
+        else:
+            self.taxa = f"{(0):.2f}%"
 
     def exportar(self):
         """Retorna um relatório estruturado como dicionário"""

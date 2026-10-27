@@ -94,7 +94,7 @@ class Top5MaisAdotaveisRepository(RelatorioRepository):
         relatorios = self.get_data()
 
         if not relatorios:
-            return NaoCadastradoError(f"Top5MaisAdotaveis({id})", self.path.__str__()) 
+            raise NaoCadastradoError(f"Top5MaisAdotaveis({id})", self.path.__str__()) 
 
         if not relatorios.get(str(id)):
             raise NaoCadastradoError(f"Top5MaisAdotaveis({id})", self.path.__str__()) 
@@ -198,7 +198,7 @@ class TaxaAdocaoRepository(RelatorioRepository):
         super().__init__(path)
         self.class_name: TaxaAdocaoPorte | TaxaAdocaoEspecies | TaxaTempoMedioEntradaAdocao = class_name
 
-    def create(self, relatorio: TaxaAdocaoEspecies | TaxaAdocaoPorte):
+    def create(self, relatorio: TaxaAdocaoEspecies | TaxaAdocaoPorte | TaxaTempoMedioEntradaAdocao):
         relatorio.gerar()
         relatorios = self.get_data()
 
@@ -251,7 +251,7 @@ class TaxaAdocaoRepository(RelatorioRepository):
 
         return self.class_name.from_dict(relatorio)
 
-    def update(self, new_relatorio: TaxaAdocaoPorte | TaxaAdocaoEspecies):
+    def update(self, new_relatorio: TaxaAdocaoPorte | TaxaAdocaoEspecies | TaxaTempoMedioEntradaAdocao):
         new_relatorio.gerar()
         relatorios = self.get_data()
 
@@ -325,13 +325,13 @@ class TaxaDevolucoesRepository(RelatorioRepository):
 
         adocoes = []
         for a in relatorio["adocoes"]:
-            if a["animal"].get("passeios_necessarios_dia"):
+            if a["animal"].get("passeios_necessarios_dia") is not None:
                 a["animal"] = Cachorro.from_dict(a["animal"])
-            elif a["animal"].get("canta"):
+            elif a["animal"].get("canta") is not None:
                 a["animal"] = Calopsita.from_dict(a["animal"])
-            elif a["animal"].get("tamanho_gaiola_m3"):
+            elif a["animal"].get("tamanho_gaiola_m3") is not None:
                 a["animal"] = Coelho.from_dict(a["animal"])
-            elif a["animal"].get("independencia"):
+            elif a["animal"].get("independencia") is not None:
                 a["animal"] = Gato.from_dict(a["animal"])
 
             a["adotante"] = Adotante.from_dict(a["adotante"])
@@ -342,13 +342,13 @@ class TaxaDevolucoesRepository(RelatorioRepository):
         
         devolucoes = []
         for d in relatorio["devolucoes"]:
-            if d["animal"].get("passeios_necessarios_dia"):
+            if d["animal"].get("passeios_necessarios_dia") is not None:
                 d["animal"] = Cachorro.from_dict(d["animal"])
-            elif d["animal"].get("canta"):
+            elif d["animal"].get("canta") is not None:
                 d["animal"] = Calopsita.from_dict(d["animal"])
-            elif d["animal"].get("tamanho_gaiola_m3"):
+            elif d["animal"].get("tamanho_gaiola_m3") is not None:
                 d["animal"] = Coelho.from_dict(d["animal"])
-            elif d["animal"].get("independencia"):
+            elif d["animal"].get("independencia") is not None:
                 d["animal"] = Gato.from_dict(d["animal"])
 
             d["adotante"] = Adotante.from_dict(d["adotante"])
