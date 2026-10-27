@@ -22,7 +22,7 @@ class PessoaService:
         self.class_initializer: dict[str, type[Pessoa]] = {
             "Adotante": Adotante
         }
-        self.Politica: IdadeMinima = PoliticaRepository(politica_path).get_by_name("IdadeMinima")
+        self.politica_path = politica_path
 
     def create(self, type_pessoa: Literal["Adotante"], pessoa_data:dict):
         model = self.class_initializer[type_pessoa]
@@ -31,9 +31,10 @@ class PessoaService:
         # Instancia classe model
         # As exceções de validação são lançadas pela classe model
         pessoa = model(**pessoa_data)
-
-        if not self.Politica.validar(pessoa.idade):
-            raise PoliticaError(type(self.Politica).__name__)
+        Politica: IdadeMinima = PoliticaRepository(self.politica_path).get_by_name("IdadeMinima")
+        
+        if not Politica.validar(pessoa.idade):
+            raise PoliticaError(type(Politica).__name__)
 
         repo.create(pessoa)
 
@@ -63,9 +64,11 @@ class PessoaService:
             if hasattr(updated_pessoa, key) and key != "email" and key != "idade":
                 setattr(updated_pessoa, key, value)
 
+        Politica: IdadeMinima = PoliticaRepository(self.politica_path).get_by_name("IdadeMinima")
+
         if updated_data.get("idade"):
-            if not self.Politica.validar(updated_data["idade"]):
-                raise PoliticaError(type(self.Politica).__name__)
+            if not Politica.validar(updated_data["idade"]):
+                raise PoliticaError(type(Politica).__name__)
 
             updated_pessoa.idade = updated_data["idade"]
 
