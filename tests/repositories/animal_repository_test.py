@@ -1,5 +1,6 @@
 from src.domain import Cachorro, Calopsita, Coelho, Gato, Vacina, Evento
 from src.repositories import AnimalRepository
+from src.domain.exceptions import NaoCadastradoError
 from datetime import datetime
 from pathlib import Path
 
@@ -8,14 +9,14 @@ import pytest
 # Garante que a pasta dos arquivos fictícios existe
 Path("tests/data/animal").mkdir(parents=True, exist_ok=True)
 
-cachorro_repository = AnimalRepository("tests/data/animal/cachorro_teste.json", Cachorro)  # type: ignore[arg-type]
-calopsita_repository = AnimalRepository("tests/data/animal/calopsita_teste.json", Calopsita)  # type: ignore[arg-type]
-coelho_repository = AnimalRepository("tests/data/animal/coelho_teste.json", Coelho)  # type: ignore[arg-type]
-gato_repository = AnimalRepository("tests/data/animal/gato_teste.json", Gato)  # type: ignore[arg-type]
+cachorro_repository = AnimalRepository("tests/data/animal/cachorro_teste.json", Cachorro)
+calopsita_repository = AnimalRepository("tests/data/animal/calopsita_teste.json", Calopsita)
+coelho_repository = AnimalRepository("tests/data/animal/coelho_teste.json", Coelho)
+gato_repository = AnimalRepository("tests/data/animal/gato_teste.json", Gato)
 
 # Testes Cachorro
 
-id_cachorro = cachorro_repository.id_generate()
+id_cachorro = cachorro_repository.generate_id()
 
 vacina = Vacina(nome="vacina", data=datetime.now())
 evento = Evento(tipo="VACINA", descricao="descrição", data=datetime.now())
@@ -75,7 +76,7 @@ def test_update_cachorro():
 
 
 def test_delete_by_id_cachorro():
-    deleted_id = cachorro_repository.id_generate()
+    deleted_id = cachorro_repository.generate_id()
 
     cachorroDeleted = Cachorro(
         id=deleted_id,
@@ -100,13 +101,13 @@ def test_delete_by_id_cachorro():
 
     cachorro_repository.delete_by_id(cachorroDeleted.id)
 
-    with pytest.raises(Exception):
+    with pytest.raises(NaoCadastradoError):
         cachorro_repository.get_by_id(cachorroDeleted.id)
 
 
 # Testes Calopsita
 
-id_calopsita = calopsita_repository.id_generate()
+id_calopsita = calopsita_repository.generate_id()
 
 calopsita = Calopsita(
     id=id_calopsita,
@@ -160,7 +161,7 @@ def test_update_calopsita():
 
 
 def test_delete_by_id_calopsita():
-    deleted_id = calopsita_repository.id_generate()
+    deleted_id = calopsita_repository.generate_id()
 
     calopsitaDeleted = calopsita = Calopsita(
         id=deleted_id,
@@ -183,13 +184,13 @@ def test_delete_by_id_calopsita():
 
     calopsita_repository.delete_by_id(calopsitaDeleted.id)
 
-    with pytest.raises(Exception):
+    with pytest.raises(NaoCadastradoError):
         calopsita_repository.get_by_id(calopsitaDeleted.id)
 
 
 # Testes Coelho
 
-id_coelho = coelho_repository.id_generate()
+id_coelho = coelho_repository.generate_id()
 
 coelho = Coelho(
     id=id_coelho,
@@ -245,7 +246,7 @@ def test_update_coelho():
 
 
 def test_delete_by_id_coelho():
-    deleted_id = coelho_repository.id_generate()
+    deleted_id = coelho_repository.generate_id()
 
     coelhoDeleted = Coelho(
         id=deleted_id,
@@ -270,13 +271,13 @@ def test_delete_by_id_coelho():
 
     coelho_repository.delete_by_id(coelhoDeleted.id)
 
-    with pytest.raises(Exception):
+    with pytest.raises(NaoCadastradoError):
         coelho_repository.get_by_id(coelhoDeleted.id)
 
 
 # Testes Gato
 
-id_gato = gato_repository.id_generate()
+id_gato = gato_repository.generate_id()
 
 gato = Gato(
     id=id_gato,
@@ -332,7 +333,7 @@ def test_update_gato():
 
 
 def test_delete_by_id_gato():
-    deleted_id = gato_repository.id_generate()
+    deleted_id = gato_repository.generate_id()
 
     gatoDeleted = Gato(
         id=deleted_id,
@@ -357,5 +358,5 @@ def test_delete_by_id_gato():
 
     gato_repository.delete_by_id(gatoDeleted.id)
 
-    with pytest.raises(Exception):
+    with pytest.raises(NaoCadastradoError):
         gato_repository.get_by_id(gatoDeleted.id)

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import Literal
 
 from ..config import IdadeMinima, DuracaoReserva, PesosCompatibilidade, PorteXArea
 from ..domain.exceptions import NaoCadastradoError
@@ -12,7 +13,6 @@ class PoliticaRepository:
 
     Attributes:
         path (Path): representa o caminho do arquivo json
-        class_name: Subclasse de política considerada
     """
 
     def __init__(self, path):
@@ -59,7 +59,7 @@ class PoliticaRepository:
 
         return res
 
-    def get_by_name(self, name):
+    def get_by_name(self, name:Literal["IdadeMinima", "DuracaoReserva", "PesosCompatibilidade", "PorteXArea"]):
         politicas = self.__get_data()
 
         if not politicas.get(name):

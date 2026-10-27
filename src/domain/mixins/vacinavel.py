@@ -24,11 +24,7 @@ class VacinavelMixin:
         # Adiciona à lista de vacinas
         self.vacinas.append(vacina)
 
-    def get_vacinas(self) -> list[dict]:
+    def get_vacinas(self) -> list[Vacina]:
         """Retorna uma lista de dicionários com as vacinas"""
-        res = []
-        for v in self.vacinas:
-            # Converte cada vacina em um dicionário e adiciona na lista que será retornada
-            res.append(v.__dict__)
 
-        return res
+        return self.vacinas

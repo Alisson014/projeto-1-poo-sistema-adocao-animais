@@ -22,6 +22,10 @@ class AdestravelMixin:
     def nivel_adestramento(self):
         return self.__nivel_adestramento
 
+    @nivel_adestramento.setter
+    def nivel_adestramento(self, value):
+        self.adestrar()
+
     def adestrar(self):
         # Garante que o nível de adestramento não ultrapasse 3
         if self.nivel_adestramento >= 3:

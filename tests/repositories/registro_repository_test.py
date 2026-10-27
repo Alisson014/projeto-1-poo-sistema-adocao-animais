@@ -59,8 +59,8 @@ adotante = Adotante(
     area_util=50,
 )
 
-PessoaRespository(adotante_path, Adotante).create(adotante) # type: ignore[arg-type]
-adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email) # type: ignore[arg-type, assignment]
+PessoaRespository(adotante_path, Adotante).create(adotante)
+adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email)
 
 # Testes Registro Adocao
 

@@ -43,15 +43,15 @@ cachorro = Cachorro(
     passeios_necessarios_dia=1,
 )
 
-quarentena = Quarentena(
-    id= quarentena_cacho_id, animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
+quarentena_cachorro = Quarentena(
+    id=quarentena_cacho_id, animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
 )
 
 def test_gera_id_quarentena_cachorro():
-    assert quarentena_cacho_id == quarentena.id
+    assert quarentena_cacho_id == quarentena_cachorro.id
 
 def test_create_quarentena_cachorro():
-    assert quarentena_cachorro_repository.create(quarentena)
+    assert quarentena_cachorro_repository.create(quarentena_cachorro)
 
 def test_get_all_quarentena_cachorro():
     quarentenas = quarentena_cachorro_repository.get_all()
@@ -111,33 +111,33 @@ calopsita = Calopsita(
     canta=False,
 )
 
-quarentena = Quarentena(
+quarentena_calopsita = Quarentena(
     id= quarentena_calop_id, animal=calopsita, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
 )
 
 def test_gera_id_quarentena_calopsita():
-    assert quarentena_calop_id == quarentena.id
+    assert quarentena_calop_id == quarentena_calopsita.id
 
 def test_create_quarentena_calopsita():
-    assert quarentena_calopsita_repository.create(quarentena)
+    assert quarentena_calopsita_repository.create(quarentena_calopsita)
 
 def test_get_all_quarentena_calopsita():
     quarentenas = quarentena_calopsita_repository.get_all()
     assert len(quarentenas) >= 1
 
 def test_get_by_id_quarentena_calopsita():
-    getted_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_calop_id)
     assert type(getted_quarentena.animal).__name__ == "Calopsita"
 
 def test_update_quarentena_calopsita():
-    getted_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_calop_id)
 
     getted_quarentena.status = "CUMPRIDA"
     getted_quarentena.data_final = datetime.now()
 
     quarentena_calopsita_repository.update(getted_quarentena)
 
-    new_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_cacho_id)
+    new_quarentena = quarentena_calopsita_repository.get_by_id(quarentena_calop_id)
 
     assert getted_quarentena.status == new_quarentena.status
 
@@ -181,33 +181,33 @@ coelho = Coelho(
     tamanho_gaiola_m3=1,
 )
 
-quarentena = Quarentena(
+quarentena_coelho = Quarentena(
     id= quarentena_coel_id, animal=coelho, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
 )
 
 def test_gera_id_quarentena_coelho():
-    assert quarentena_coel_id == quarentena.id
+    assert quarentena_coel_id == quarentena_coelho.id
 
 def test_create_quarentena_coelho():
-    assert quarentena_coelho_repository.create(quarentena)
+    assert quarentena_coelho_repository.create(quarentena_coelho)
 
 def test_get_all_quarentena_coelho():
     quarentenas = quarentena_coelho_repository.get_all()
     assert len(quarentenas) >= 1
 
 def test_get_by_id_quarentena_coelho():
-    getted_quarentena = quarentena_coelho_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_coelho_repository.get_by_id(quarentena_coel_id)
     assert type(getted_quarentena.animal).__name__ == "Coelho"
 
 def test_update_quarentena_coelho():
-    getted_quarentena = quarentena_coelho_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_coelho_repository.get_by_id(quarentena_coel_id)
 
     getted_quarentena.status = "CUMPRIDA"
     getted_quarentena.data_final = datetime.now()
 
     quarentena_coelho_repository.update(getted_quarentena)
 
-    new_quarentena = quarentena_coelho_repository.get_by_id(quarentena_cacho_id)
+    new_quarentena = quarentena_coelho_repository.get_by_id(quarentena_coel_id)
 
     assert getted_quarentena.status == new_quarentena.status
 
@@ -251,33 +251,33 @@ gato = Gato(
     independencia=True,
 )
 
-quarentena = Quarentena(
+quarentena_gato = Quarentena(
     id= quarentena_gato_id, animal=gato, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
 )
 
 def test_gera_id_quarentena_gato():
-    assert quarentena_gato_id == quarentena.id
+    assert quarentena_gato_id == quarentena_gato.id
 
 def test_create_quarentena_gato():
-    assert quarentena_gato_repository.create(quarentena)
+    assert quarentena_gato_repository.create(quarentena_gato)
 
 def test_get_all_quarentena_gato():
     quarentenas = quarentena_gato_repository.get_all()
     assert len(quarentenas) >= 1
 
 def test_get_by_id_quarentena_gato():
-    getted_quarentena = quarentena_gato_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_gato_repository.get_by_id(quarentena_gato_id)
     assert type(getted_quarentena.animal).__name__ == "Gato"
 
 def test_update_quarentena_gato():
-    getted_quarentena = quarentena_gato_repository.get_by_id(quarentena_cacho_id)
+    getted_quarentena = quarentena_gato_repository.get_by_id(quarentena_gato_id)
 
     getted_quarentena.status = "CUMPRIDA"
     getted_quarentena.data_final = datetime.now()
 
     quarentena_gato_repository.update(getted_quarentena)
 
-    new_quarentena = quarentena_gato_repository.get_by_id(quarentena_cacho_id)
+    new_quarentena = quarentena_gato_repository.get_by_id(quarentena_gato_id)
 
     assert getted_quarentena.status == new_quarentena.status
 

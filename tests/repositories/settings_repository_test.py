@@ -13,7 +13,7 @@ pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_
 duracao_reserva = DuracaoReserva(nome="duração reserva", data_modificacao=datetime.now(), duracao_dias=14)
 idade_minima = IdadeMinima(nome="idade mínima", data_modificacao=datetime.now(), idade_minima=18)
 
-# A intenção deste teste é limpar automaticamente settings.json para evitar erros na creação de políticas já existentes
+# A intenção deste teste é limpar automaticamente settings.json para evitar erros na criação de políticas já existentes
 def test_delete_all_settings():
     settings_repository.delete_all(validator=True)
 
