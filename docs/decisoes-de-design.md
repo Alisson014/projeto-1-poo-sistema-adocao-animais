@@ -130,3 +130,18 @@ adocao.json
 ---
 
 <br>
+
+## 8. Recorrer à utilização de ia generativa para codificação de services (Relatorio e FilaEspera)
+
+### Motivo:
+Tempo disponível insuficiente para contemplar o prazo para a entrega 4
+
+### Implicações:
+Utilizei IA generativa para geração de códigos em relação aos services de Relatorio e FilaEspera. Também foram realizados os ajustes de código sugeridos pelo agente. Todo código gerado com auxílio de ia generativa foi devidamente declarado em seu respectivo arquivo, declaração esta que engloba as seguintes informações:
+- O que foi feito;
+- IA utilizada;
+- Prompt;
+
+---
+
+<br>
