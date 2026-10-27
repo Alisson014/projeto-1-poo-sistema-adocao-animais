@@ -38,4 +38,5 @@ __all__ = [
     "TaxaDevolucoes",
     "TaxaTempoMedioEntradaAdocao",
     "Top5MaisAdotaveis",
+    "Quarentena"
 ]

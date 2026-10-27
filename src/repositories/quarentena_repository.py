@@ -85,7 +85,7 @@ class QuarentenaRepository:
         quarentenas = self.__get_data()
 
         if not quarentenas:
-            return None
+            raise NaoCadastradoError(f"Quarentena({id})", self.path.__str__())
 
         if not quarentenas.get(str(id)):
             raise NaoCadastradoError(f"Quarentena({id})", self.path.__str__())
