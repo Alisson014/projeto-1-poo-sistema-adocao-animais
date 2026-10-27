@@ -19,7 +19,7 @@ class RegistroRepository:
 
     def __init__(self, path, class_name, animal_path, animal_class_name, adotante_path):
         self.path = Path(path)
-        self.class_name: Adocao | Devolucao | Reserva = class_name
+        self.class_name: type[Adocao | Devolucao | Reserva] = class_name
         self.animal_repository = AnimalRepository(animal_path, animal_class_name)
         self.adotante_repository = PessoaRespository(adotante_path, Adotante)
 
@@ -64,7 +64,6 @@ class RegistroRepository:
         for i in registros.keys():
             try:
                 registros[i]["animal"] = self.animal_repository.get_by_id(registros[i]["animal"])
-                print(registros[i]["animal"])
                 registros[i]["adotante"] = self.adotante_repository.get_by_email(registros[i]["adotante"])
 
                 res.append(self.class_name.from_dict(registros[i]))
@@ -92,7 +91,6 @@ class RegistroRepository:
         except NaoCadastradoError:
             # Limpa a quarentena inválida da memória
             self.delete_by_id(id)
-
             raise NaoCadastradoError(f"Quarentena({id})", self.path.__str__())
 
         return self.class_name.from_dict(registro)
