@@ -1,4 +1,9 @@
 
+# Ignore json real databese
+
+data/*.json
+data/*/*.json
+
 # Ignore json test database
 
 tests/data/*/*.json
