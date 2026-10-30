@@ -145,3 +145,15 @@ Utilizei IA generativa para geração de códigos em relação aos services de R
 ---
 
 <br>
+
+## 9. Utilização de `utils` aa invés de `Strategy`
+
+### Motivo:
+Tempo disponível insuficiente para contemplar o prazo para a entrega final
+
+### Implicações:
+Renomeei a pasta `Strategy` para `utils`, de modo que eu apenas criarei funções utilitárias para o sistema. Cada função terá seu próprio arquivo, para evitar acoplamento excessivo em um único módulo com várias funções diferentes.
+
+---
+
+<br>
