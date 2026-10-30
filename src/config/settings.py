@@ -1,5 +1,5 @@
 from src.domain.enums import Porte
-from src.domain.exceptions import TipagemError
+from src.domain.exceptions import TipagemError, ValorForaDoIntervaloError
 
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -190,6 +190,16 @@ class PesosCompatibilidade(Politica):
         peso_criancas_temperamento: float,
     ):
         super().__init__(nome=nome, data_modificacao=data_modificacao)
+
+        self.validar_pesos(
+            [
+                peso_porte_moradia,
+                peso_experiencia_temperamento,
+                peso_tempo_livre_energia,
+                peso_criancas_temperamento
+            ]
+        )
+
         self.peso_porte_moradia: float = peso_porte_moradia
         self.peso_experiencia_temperamento: float = peso_experiencia_temperamento
         self.peso_tempo_livre_energia: float = peso_tempo_livre_energia
@@ -207,6 +217,16 @@ class PesosCompatibilidade(Politica):
             "peso_tempo_livre_energia": self.peso_tempo_livre_energia,
             "peso_criancas_temperamento": self.peso_criancas_temperamento,
         }
+
+    def validar_pesos(self, pesos:list[float]):
+        sum = 0.0
+        for p in pesos:
+            sum += p
+            if p < 0: 
+                raise ValorForaDoIntervaloError("Pesos", "Um peso deve ser positivo")
+
+        if sum != 1: 
+            raise ValorForaDoIntervaloError("Pesos", "A soma dos pesos deve ser um")
 
     def validar(self):
         return NotImplemented

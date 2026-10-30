@@ -5,6 +5,8 @@ from ..domain import Adocao, Devolucao, Reserva, Adotante
 from ..domain.exceptions import NaoCadastradoError
 from .animal_repository import AnimalRepository
 from .pessoa_repository import PessoaRespository
+from ..config import PesosCompatibilidade
+from ..utils import get_compatibilidade
 
 class RegistroRepository:
     """Classe para manipulação de arquivos json referentes ao domínio de Registro
@@ -38,11 +40,14 @@ class RegistroRepository:
         else:
             return {}
 
-    def create(self, registro: Adocao | Devolucao | Reserva):
+    def create(self, registro: Adocao | Devolucao | Reserva, Pesos:PesosCompatibilidade):
         registros = self.__get_data()
 
         if registros.get(str(registro.id)):
             raise Exception(f"O id {registro.id} já está reservado para um registro")
+
+        if isinstance(registro, Reserva):
+            registro.compatibilidade = get_compatibilidade(registro.animal, registro.adotante, Pesos)
 
         with self.path.open('w', encoding='utf-8') as file:
             registros[registro.id] = registro.to_dict()

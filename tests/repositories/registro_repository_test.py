@@ -1,7 +1,8 @@
-from src.domain import Adotante, Cachorro, Animal, Adocao, Devolucao, Reserva
-from src.domain.models import Quarentena
+from src.domain import Adotante, Cachorro, Adocao, Devolucao, Reserva
 from src.repositories import RegistroRepository, PessoaRespository
 from src.domain.exceptions import NaoCadastradoError
+from src.repositories.settings_repository import PoliticaRepository
+from src.config import PesosCompatibilidade
 
 from random import randint
 from datetime import datetime
@@ -24,6 +25,18 @@ reserva_path = "tests/data/registro/reserva_teste.json"
 adocao_repository = RegistroRepository(adocao_path, Adocao, cachorro_path, Cachorro, adotante_path)
 devolucao_repository = RegistroRepository(devolucao_path, Devolucao, cachorro_path, Cachorro, adotante_path)
 reserva_repository = RegistroRepository(reserva_path, Reserva, cachorro_path, Cachorro, adotante_path)
+
+politica_repository = PoliticaRepository("tests/data/settings.json")
+
+try: 
+    pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_modificacao=datetime.now(), peso_porte_moradia=0.2, peso_experiencia_temperamento=0.3, peso_tempo_livre_energia=0.2, peso_criancas_temperamento=0.3)
+    # Garante 
+    politica_repository.create(pesos_compatibilidade)
+except Exception:
+    # Ignora caso ocorra o erro de política já cadastrada
+    pass
+
+Pesos = politica_repository.get_by_name("PesosCompatibilidade")
 
 
 cachorro = Cachorro(
@@ -79,7 +92,7 @@ def test_generate_id_adocao():
     assert adocao.id == adocao_id
 
 def test_create_adocao():
-    assert adocao_repository.create(adocao)
+    assert adocao_repository.create(adocao, Pesos)
 
 def test_get_all_adocao():
     adocoes = adocao_repository.get_all()
@@ -111,7 +124,7 @@ def test_delete_by_id():
         data=datetime.now(),
     )
 
-    adocao_repository.create(deleted_adocao)
+    adocao_repository.create(deleted_adocao, Pesos)
 
     adocao_repository.delete_by_id(deleted_id)
 
@@ -131,7 +144,7 @@ def test_generate_id_devolucao():
     assert devolucao.id == devolucao_id
 
 def test_create_devolucao():
-    assert devolucao_repository.create(devolucao)
+    assert devolucao_repository.create(devolucao, Pesos)
 
 def test_get_all_devolucao():
     devolucoes = devolucao_repository.get_all()
@@ -158,7 +171,7 @@ def test_delete_by_id_devolucao():
         id=deleted_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
     )
 
-    devolucao_repository.create(deleted_devolucao)
+    devolucao_repository.create(deleted_devolucao, Pesos)
 
     devolucao_repository.delete_by_id(deleted_id)
 
@@ -184,7 +197,7 @@ def test_generate_id_reserva():
     assert reserva.id == reserva_id
 
 def test_create_reserva():
-    assert reserva_repository.create(reserva)
+    assert reserva_repository.create(reserva, Pesos)
 
 def test_get_all_reserva():
     devolucoes = reserva_repository.get_all()
@@ -218,7 +231,7 @@ def test_delete_by_id_reserva():
         compatibilidade=100,
     )
 
-    reserva_repository.create(deleted_reserva)
+    reserva_repository.create(deleted_reserva, Pesos)
 
     reserva_repository.delete_by_id(deleted_id)
 

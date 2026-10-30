@@ -1,5 +1,6 @@
 from ..domain import Registro, Reserva, Devolucao, Adocao
 from ..domain import Cachorro, Calopsita, Coelho, Gato, Animal, Adotante
+from ..config import PesosCompatibilidade
 from ..repositories import RegistroRepository
 
 from typing import Literal
@@ -15,6 +16,7 @@ class RegistroService:
         repository (dict[str, RegistroRepository]): Mapeamento dos repositories disponíveis no domínio
         regis_class_initializer (dict[str, type[Registro]]): Mapeamento das subclasses de Registro
         animal_class_initializer (dict[str, type[Animal]]): Mapeamento das subclasses de Animal
+        politica_path (Path): Caminho do json de política para inicialização do PoliticaRepository
     """
     def __init__(
             self,
@@ -34,7 +36,7 @@ class RegistroService:
             calop_path:str,
             coel_path:str,
             gato_path:str,
-            adotante_path,
+            adotante_path:str
         ):
 
         # Mapeia registros e as subdivisões entre os animais
@@ -58,7 +60,7 @@ class RegistroService:
                 "Gato": RegistroRepository(path_reserva_gato, Reserva, gato_path, Gato, adotante_path),
             },
         }
-        self.regis_class_initializer: dict[str, type[Registro]] = {
+        self.regis_class_initializer: dict[str, type[Adocao | Devolucao | Reserva]] = {
             "Adocao": Adocao,
             "Devolucao": Devolucao,
             "Reserva": Reserva,
@@ -69,12 +71,14 @@ class RegistroService:
             "Coelho": Coelho,
             "Gato": Gato
         }
+        
 
     def create(
             self,
             type_registro: Literal["Adocao", "Devolucao", "Reserva"],
             type_animal: Literal["Cachorro", "Calopsita", "Coelho", "Gato"],
-            registro_data: dict
+            registro_data: dict,
+            Pesos: PesosCompatibilidade
             ):
         regis_model = self.regis_class_initializer[type_registro]
         animal_model = self.animal_class_initializer[type_animal]
@@ -84,10 +88,10 @@ class RegistroService:
         registro_data["adotante"] = Adotante.from_dict(registro_data["adotante"])
 
         # O tratamento das exceções é feito pela classe model
-        registro = regis_model(**registro_data, id=repo.generate_id())
+        registro: Adocao | Devolucao | Reserva = regis_model(**registro_data, id=repo.generate_id())
 
-        repo.create(registro)
-
+        
+        repo.create(registro, Pesos)
         return registro
 
     def get_all(self):
@@ -163,10 +167,10 @@ class RegistroService:
 
     def delete_all_registro(self, type_registro: Literal["Adocao", "Devolucao", "Reserva"]):
         for repo in self.repository[type_registro].values():
-            repo.delete_all()
+            repo.delete_all(True)
         
         
     def delete_all(self):
         for repo_key in self.repository.keys():
             for repo in self.repository[repo_key].values():
-                repo.delete_all()
+                repo.delete_all(True)

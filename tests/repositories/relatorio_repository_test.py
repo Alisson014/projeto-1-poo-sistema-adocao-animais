@@ -53,11 +53,15 @@ from src.domain import (
     TaxaTempoMedioEntradaAdocao,
     TaxaDevolucoes,
 )
+
+from src.config import PesosCompatibilidade
+
 from src.repositories import (
     PessoaRespository,
     Top5MaisAdotaveisRepository,
     TaxaAdocaoRepository,
     TaxaDevolucoesRepository,
+    PoliticaRepository
 )
 from src.domain.exceptions import NaoCadastradoError
 
@@ -125,6 +129,19 @@ adotante = Adotante(
 PessoaRespository(adotante_path, Adotante).create(adotante) # type: ignore[arg-type]
 adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email)  # type: ignore[arg-type, assignment]
 
+politica_repository = PoliticaRepository("tests/data/settings.json")
+
+try: 
+    pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_modificacao=datetime.now(), peso_porte_moradia=0.2, peso_experiencia_temperamento=0.3, peso_tempo_livre_energia=0.2, peso_criancas_temperamento=0.3)
+    # Garante 
+    politica_repository.create(pesos_compatibilidade)
+except Exception:
+    # Ignora caso ocorra o erro de política já cadastrada
+    pass
+
+
+politica_repository = PoliticaRepository("tests/data/settings.json")
+Pesos:PesosCompatibilidade = politica_repository.get_by_name("PesosCompatibilidade")
 
 # Funções auxiliares para criar instâncias novas.
 # Os repositories podem alterar o objeto recebido, então instâncias
@@ -156,6 +173,7 @@ def criar_top5(id):
         nome="Top 5 teste",
         animais=[cachorro],
         adotantes=[adotante],
+        pesos_compatibilidade=Pesos
     )
 
 def criar_taxa_especies(id):
@@ -222,6 +240,7 @@ def test_update_top5():
     getted_top5 = top5_repository.get_by_id(top5_id)
 
     getted_top5.nome = "Top 5 atualizado"
+    getted_top5.pesos_compatibilidade = Pesos
 
     top5_repository.update(getted_top5)
 

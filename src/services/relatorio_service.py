@@ -40,7 +40,7 @@ Dessa forma, gere a versão finas dos services e de seus testes.
 from ..domain import Top5MaisAdotaveis
 from ..repositories import Top5MaisAdotaveisRepository
 from ..domain import TaxaAdocaoPorte, TaxaAdocaoEspecies, TaxaTempoMedioEntradaAdocao
-from ..repositories import TaxaAdocaoRepository
+from ..repositories import TaxaAdocaoRepository, PoliticaRepository
 from ..domain import TaxaDevolucoes
 from ..repositories import TaxaDevolucoesRepository
 
@@ -54,19 +54,22 @@ class Top5MaisAdotaveisService:
 
     Attributes:
         repository (Top5MaisAdotaveisRepository): Repository do relatório Top5MaisAdotaveis
+        politica_repository (PoliticaRepository): Repository de Política para buscas os pesos de compatibilidade
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, path_politica:str):
         self.repository = Top5MaisAdotaveisRepository(path)
+        self.politica_repository = PoliticaRepository(path_politica)
 
     def create(self, relatorio_data: dict):
         # O top5 é sempre calculado por gerar(), então nunca é recebido de fora.
         # Passá-lo explicitamente evita o uso da lista padrão mutável do model
-        relatorio_data = {**relatorio_data, "top5": []}
+        # relatorio_data = {**relatorio_data, "top5": []}
 
         # Instancia classe model
         # As exceções de validação são lançadas pela classe model
         relatorio = Top5MaisAdotaveis(**relatorio_data, id=self.repository.generate_id())
+        relatorio.pesos_compatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
 
         # O método gerar() é invocado dentro do repository
         self.repository.create(relatorio)
@@ -87,6 +90,8 @@ class Top5MaisAdotaveisService:
         for key, value in relatorio_data.items():
             if hasattr(updated_relatorio, key) and key != "id":
                 setattr(updated_relatorio, key, value)
+
+        updated_relatorio.pesos_compatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
 
         # gerar() acrescenta animais ao top5, então o top5 anterior é descartado
         # para que o relatório seja recalculado do zero

@@ -1,6 +1,7 @@
 from src.domain import Animal, Cachorro, Calopsita, Coelho, Gato, Adotante, Adocao
+from src.config import PesosCompatibilidade
 from src.services import RegistroService
-from src.repositories import PessoaRespository
+from src.repositories import PessoaRespository, PoliticaRepository
 from src.domain.exceptions import ValorForaDoIntervaloError, TipagemError, TransicaoDeEstadoInvalidaError, NaoCadastradoError
 
 from datetime import datetime
@@ -54,6 +55,20 @@ adotante_path = "tests/data/pessoa/adotante_teste.json"
 PessoaRespository(adotante_path, Adotante).create(adotante)
 adotante = PessoaRespository(adotante_path, Adotante).get_by_email(email)
 
+politica_repository = PoliticaRepository("tests/data/settings.json")
+
+try: 
+    pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_modificacao=datetime.now(), peso_porte_moradia=0.2, peso_experiencia_temperamento=0.3, peso_tempo_livre_energia=0.2, peso_criancas_temperamento=0.3)
+    # Garante 
+    politica_repository.create(pesos_compatibilidade)
+except Exception:
+    # Ignora caso ocorra o erro de política já cadastrada
+    pass
+
+
+politica_repository = PoliticaRepository("tests/data/settings.json")
+Pesos:PesosCompatibilidade = politica_repository.get_by_name("PesosCompatibilidade")
+
 registro_service = RegistroService(
     "tests/data/registro/reserva_teste.json",
     "tests/data/registro/reserva_teste.json",
@@ -80,7 +95,7 @@ def test_create():
     registro_data["animal"] = cachorro.to_dict()
     registro_data["adotante"] = adotante.to_dict()
 
-    assert registro_service.create("Adocao", "Cachorro", registro_data)
+    assert registro_service.create("Adocao", "Cachorro", registro_data, Pesos)
 
 
 # Não testados aqui devido à inexistência dos bancos de registros específicos dos demais animais
@@ -122,7 +137,7 @@ def test_delete_by_id():
     registro_data["animal"] = cachorro.to_dict()
     registro_data["adotante"] = adotante.to_dict()
 
-    del_registro = registro_service.create("Adocao", "Cachorro", registro_data)
+    del_registro = registro_service.create("Adocao", "Cachorro", registro_data, Pesos)
 
     registro_service.delete_by_id("Adocao", "Cachorro", del_registro.id)
 

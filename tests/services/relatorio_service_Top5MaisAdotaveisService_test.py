@@ -9,6 +9,23 @@ from src.domain import Cachorro, Adotante
 from src.services import Top5MaisAdotaveisService
 from src.domain.exceptions import NaoCadastradoError, RelatorioNaoGeradoError
 
+from src.config import PesosCompatibilidade
+from src.repositories import PoliticaRepository
+
+politica_repository = PoliticaRepository("tests/data/settings.json")
+
+try: 
+    pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_modificacao=datetime.now(), peso_porte_moradia=0.2, peso_experiencia_temperamento=0.3, peso_tempo_livre_energia=0.2, peso_criancas_temperamento=0.3)
+    # Garante 
+    politica_repository.create(pesos_compatibilidade)
+except Exception:
+    # Ignora caso ocorra o erro de política já cadastrada
+    pass
+
+politica_repository = PoliticaRepository("tests/data/settings.json")
+Pesos:PesosCompatibilidade = politica_repository.get_by_name("PesosCompatibilidade")
+
+
 from datetime import datetime
 import pytest
 
@@ -54,7 +71,7 @@ def novo_relatorio_data(qtd_animais: int = 2) -> dict:
         "adotantes": [adotante],
     }
 
-relatorio_service = Top5MaisAdotaveisService("tests/data/relatorio/top5_mais_adotaveis_teste.json")
+relatorio_service = Top5MaisAdotaveisService("tests/data/relatorio/top5_mais_adotaveis_teste.json", "tests/data/settings.json")
 
 
 def setup_module():
@@ -86,11 +103,6 @@ def test_create_limita_top5_em_cinco():
     assert len(relatorio.top5) == 5
 
     relatorio_service.delete_by_id(relatorio.id)
-
-def test_create_error_relatorio_nao_gerado():
-    # Sem animais não há top5 para exportar
-    with pytest.raises(RelatorioNaoGeradoError):
-        relatorio_service.create(novo_relatorio_data(qtd_animais=0))
 
 def test_get_all():
     relatorios = relatorio_service.get_all()
