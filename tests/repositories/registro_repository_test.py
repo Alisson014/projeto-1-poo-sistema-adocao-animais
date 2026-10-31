@@ -5,7 +5,7 @@ from src.repositories.settings_repository import PoliticaRepository
 from src.config import PesosCompatibilidade
 
 from random import randint
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import pytest
 
@@ -188,7 +188,7 @@ reserva = Reserva(
     animal=cachorro,
     adotante=adotante,
     data_inicial=datetime.now(),
-    data_expiracao=datetime.now(),
+    data_expiracao= datetime.now() + timedelta(days=15),
     status="ATIVA",
     compatibilidade=100,
 )

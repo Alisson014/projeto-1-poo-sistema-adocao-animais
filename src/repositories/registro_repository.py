@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from datetime import datetime
 
 from ..domain import Adocao, Devolucao, Reserva, Adotante
 from ..domain.exceptions import NaoCadastradoError
@@ -71,7 +72,15 @@ class RegistroRepository:
                 registros[i]["animal"] = self.animal_repository.get_by_id(registros[i]["animal"])
                 registros[i]["adotante"] = self.adotante_repository.get_by_email(registros[i]["adotante"])
 
-                res.append(self.class_name.from_dict(registros[i]))
+                registro = self.class_name.from_dict(registros[i])
+
+                # Elimina as Reservas expiradas do banco
+                if isinstance(registro, Reserva):
+                    if registro.data_expiracao < datetime.now():
+                        ids_inexistentes.append(i)
+                        continue
+
+                res.append(registro)
             except NaoCadastradoError:
                 # Ignora caso o código tente buscar o id de um animal que foi deletado
                 # Precaução a falhas na consistência dos dados
@@ -93,12 +102,20 @@ class RegistroRepository:
         try:
             registro["animal"] = self.animal_repository.get_by_id(registro["animal"])
             registro["adotante"] = self.adotante_repository.get_by_email(registro["adotante"])
+
+            registro = self.class_name.from_dict(registro)
+
+            # Elimina as Reservas expiradas do banco
+            if isinstance(registro, Reserva):
+                if registro.data_expiracao < datetime.now():
+                    raise NaoCadastradoError("Reserva expirada", self.path.__str__())
+            
         except NaoCadastradoError:
             # Limpa a quarentena inválida da memória
             self.delete_by_id(id)
             raise NaoCadastradoError(f"Quarentena({id})", self.path.__str__())
 
-        return self.class_name.from_dict(registro)
+        return registro
 
     def update(self, new_registro:Adocao | Devolucao | Reserva):
         registros = self.__get_data()

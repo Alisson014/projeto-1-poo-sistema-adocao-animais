@@ -87,6 +87,7 @@ registro_service = RegistroService(
     "tests/data/animal/cachorro_teste.json",
     "tests/data/animal/cachorro_teste.json",
     adotante_path,
+    "tests/data/settings.json"
 )
 
 def test_create():

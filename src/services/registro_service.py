@@ -1,10 +1,11 @@
 from ..domain import Registro, Reserva, Devolucao, Adocao
 from ..domain import Cachorro, Calopsita, Coelho, Gato, Animal, Adotante
 from ..config import PesosCompatibilidade
-from ..repositories import RegistroRepository
+from ..repositories import RegistroRepository, PoliticaRepository
+from ..domain.exceptions import PoliticaError
 
 from typing import Literal
-
+from datetime import timedelta
 
 class RegistroService:
     """Classe para modelar os serviços referentes ao domínio de registro
@@ -36,7 +37,8 @@ class RegistroService:
             calop_path:str,
             coel_path:str,
             gato_path:str,
-            adotante_path:str
+            adotante_path:str,
+            politica_path:str
         ):
 
         # Mapeia registros e as subdivisões entre os animais
@@ -71,14 +73,14 @@ class RegistroService:
             "Coelho": Coelho,
             "Gato": Gato
         }
-        
+        self.politica_repository = PoliticaRepository(politica_path)
 
     def create(
             self,
             type_registro: Literal["Adocao", "Devolucao", "Reserva"],
             type_animal: Literal["Cachorro", "Calopsita", "Coelho", "Gato"],
             registro_data: dict,
-            Pesos: PesosCompatibilidade
+            Pesos: PesosCompatibilidade | None = None
             ):
         regis_model = self.regis_class_initializer[type_registro]
         animal_model = self.animal_class_initializer[type_animal]
@@ -90,6 +92,17 @@ class RegistroService:
         # O tratamento das exceções é feito pela classe model
         registro: Adocao | Devolucao | Reserva = regis_model(**registro_data, id=repo.generate_id())
 
+        # Validação da política de área mínima para o porte do animal
+        if isinstance(registro, Adocao) or isinstance(registro, Reserva):
+            if not self.politica_repository.get_by_name("PorteXArea").validar(registro.animal.porte, registro.adotante.area_util):
+                raise PoliticaError(f"Area útil do adotante abaixo da mínima para o porte {registro.animal.porte}")
+
+        if isinstance(registro, Reserva):
+            intervalo = timedelta(days=self.politica_repository.get_by_name("DuracaoReserva").duracao_dias)
+            registro.data_expiracao = registro.data_inicial + intervalo
+
+        if Pesos is None:
+            Pesos: PesosCompatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
         
         repo.create(registro, Pesos)
         return registro
