@@ -1,5 +1,6 @@
 from src.api.routes import animal_route
 from src.api.routes import politica_route
+from src.api.routes import pessoa_route
 
 from fastapi import FastAPI
 
@@ -13,6 +14,7 @@ app = FastAPI(
 # Inclusão das rotas
 app.include_router(animal_route.router, prefix="/api")
 app.include_router(politica_route.router, prefix="/api")
+app.include_router(pessoa_route.router, prefix="/api")
 
 
 @app.get("/")
