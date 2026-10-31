@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Union
-from datetime import datetime
+from typing import Literal
 
 
 class PessoaSchema(BaseModel):

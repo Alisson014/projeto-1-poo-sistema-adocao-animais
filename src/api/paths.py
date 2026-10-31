@@ -41,3 +41,17 @@ class PoliticaPath:
 
     path = "data/settings.json"
 
+
+# =========================
+#  Quarentena
+# =========================
+
+@dataclass(frozen=True)
+class QuarentenaPath:
+    Path("data/quarentena").mkdir(parents=True, exist_ok=True)
+
+    cachorro = "data/quarentena/q_cachorro.json"
+    calopsita = "data/quarentena/q_calopsita.json"
+    coelho = "data/quarentena/q_coelho.json"
+    gato = "data/quarentena/q_gato.json"
+

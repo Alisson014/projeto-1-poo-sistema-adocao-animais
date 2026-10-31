@@ -60,7 +60,7 @@ class NaoCadastradoError(Exception):
 
 class JaCadastradoError(Exception):
     def __init__(self, obj, type_obj):
-        super().__init__(f"{obj} já existem em {type_obj}")
+        super().__init__(f"{obj} já existe em {type_obj}")
         self.obj = obj
         self.type_obj = type_obj
 

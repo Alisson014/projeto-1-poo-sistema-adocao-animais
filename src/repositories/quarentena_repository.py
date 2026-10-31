@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from ..domain.models import Quarentena
-from ..domain.exceptions import NaoCadastradoError, NaoEncontradoError
+from ..domain.exceptions import NaoCadastradoError, JaCadastradoError, NaoEncontradoError
 from .animal_repository import AnimalRepository
 
 
@@ -45,9 +45,10 @@ class QuarentenaRepository:
         quarentenas = self.__get_data()
 
         for i in quarentenas.keys():
-            if quarentenas[i]["animal"] == str(quarentena.animal.id):
+            print(quarentenas[i], quarentena.animal.id)
+            if quarentenas[i]["animal"] == quarentena.animal.id:
                 if quarentenas[i]["status"] == "ATIVA":
-                    raise Exception("Um animal não pode cumprir duas quarentenas ao mesmo tempo")
+                    raise JaCadastradoError(f"{quarentena.animal.id} não pode cumprir duas quarentenas ao mesmo tempo,", self.path.__str__())
                 break
 
         with self.path.open('w', encoding='utf-8') as file:

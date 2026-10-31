@@ -2,6 +2,7 @@ from .animal_schema import AnimalCreateSchema, CachorroCreateSchema, CachorroRes
 from .auxiliares_schema import EventoSchame, VacinaSchema
 from .pessoa_schema import AdotanteSchema
 from .politica_schema import PorteXAreaSchema, IdadeMinimaSchema, DuracaoReservaSchema, PesosCompatibilidadeSchema, PoliticaUnion, PoliticaSchema
+from .quarentena_schema import QuarentenaCreateSchema, QuarentenaResponseSchema
 
 __all__ = [
     "AnimalCreateSchema",
@@ -22,5 +23,7 @@ __all__ = [
     "DuracaoReservaSchema",
     "PesosCompatibilidadeSchema",
     "PoliticaSchema",
-    "PoliticaUnion"
+    "PoliticaUnion",
+    "QuarentenaCreateSchema",
+    "QuarentenaResponseSchema"
 ]
