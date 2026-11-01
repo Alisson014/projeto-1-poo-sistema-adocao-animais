@@ -105,7 +105,7 @@ class RegistroService:
             registro.data_expiracao = registro.data_inicial + intervalo
 
         if Pesos is None:
-            Pesos: PesosCompatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
+            Pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
         
         repo.create(registro, Pesos)
         return registro
