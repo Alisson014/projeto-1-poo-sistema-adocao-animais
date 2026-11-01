@@ -5,6 +5,7 @@ from .politica_schema import PorteXAreaSchema, IdadeMinimaSchema, DuracaoReserva
 from .quarentena_schema import QuarentenaCreateSchema, QuarentenaResponseSchema
 from .registro_schema import AdocaoCreateSchema, AdocaoResponseSchema, DevolucaoCreateSchema, DevolucaoResponseSchema, ReservaCreateSchema, ReservaResponseSchema, RegistroResponseUnion
 from .relatorio_schema import Top5MaisAdotaveisCreateSchema, Top5MaisAdotaveisResponseSchema, TaxaAdocaoCreateSchema, TaxaAdocaoResponseSchema, TaxaTempoMedioEntradaAdocaoResponseSchema, TaxaDevolucoesCreateSchema, TaxaDevolucoesResponseSchema, RelatorioCreateUnion, RelatorioResponseUnion
+from .fila_espera_schema import FilaEsperaSchema, EntradaFilaSchema
 
 __all__ = [
     "AnimalCreateSchema",
@@ -43,5 +44,7 @@ __all__ = [
     "TaxaDevolucoesCreateSchema",
     "TaxaDevolucoesResponseSchema",
     "RelatorioCreateUnion",
-    "RelatorioResponseUnion"
+    "RelatorioResponseUnion",
+    "FilaEsperaSchema",
+    "EntradaFilaSchema"
 ]

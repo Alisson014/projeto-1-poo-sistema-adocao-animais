@@ -100,3 +100,16 @@ class RelatorioPath:
     taxa_devolucoes = "data/relatorio/taxa_devolucoes.json"
     taxa_tempo_medio_entrada_adocao = "data/relatorio/taxa_tempo_medio_entrada_adocao.json"
     top5_mais_adotaveis = "data/relatorio/top5_mais_adotaveis.json"
+
+# =========================
+#  Fila Espera
+# =========================
+
+@dataclass(frozen=True)
+class FilaEsperaPath:
+    Path("data/fila_espera").mkdir(parents=True, exist_ok=True)
+
+    fila_cachorro_path = "data/fila_espera/fila_cachorro.json"
+    fila_calopsita_path = "data/fila_espera/fila_calopsita.json"
+    fila_coelho_path = "data/fila_espera/fila_coelho.json"
+    fila_gato_path = "data/fila_espera/fila_gato.json"
