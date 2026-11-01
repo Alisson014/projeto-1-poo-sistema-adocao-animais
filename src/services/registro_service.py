@@ -92,6 +92,9 @@ class RegistroService:
         # O tratamento das exceções é feito pela classe model
         registro: Adocao | Devolucao | Reserva = regis_model(**registro_data, id=repo.generate_id())
 
+        if isinstance(registro, Adocao):
+            registro.taxa = registro.calcular_taxa()
+
         # Validação da política de área mínima para o porte do animal
         if isinstance(registro, Adocao) or isinstance(registro, Reserva):
             if not self.politica_repository.get_by_name("PorteXArea").validar(registro.animal.porte, registro.adotante.area_util):

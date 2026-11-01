@@ -2,6 +2,7 @@ from src.api.routes import animal_route
 from src.api.routes import politica_route
 from src.api.routes import pessoa_route
 from src.api.routes import quarentena_route
+from src.api.routes import registro_route
 
 from fastapi import FastAPI
 
@@ -17,6 +18,7 @@ app.include_router(animal_route.router, prefix="/api")
 app.include_router(politica_route.router, prefix="/api")
 app.include_router(pessoa_route.router, prefix="/api")
 app.include_router(quarentena_route.router, prefix="/api")
+app.include_router(registro_route.router, prefix="/api")
 
 
 @app.get("/")

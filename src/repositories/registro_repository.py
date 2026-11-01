@@ -74,7 +74,19 @@ class RegistroRepository:
 
     @staticmethod
     def __expirada(registro) -> bool:
-        return isinstance(registro, Reserva) and registro.data_expiracao < datetime.now()
+        # Garante a comparação mesmo com timezones ou padrões diferentes
+        if isinstance(registro, Reserva):
+            now = datetime.now()
+            if registro.data_expiracao.year < now.year:
+                return True
+            elif registro.data_expiracao.year == now.year:
+                if registro.data_expiracao.month < now.month:
+                    return True
+                elif registro.data_expiracao.month == now.month:
+                    if registro.data_expiracao.day < now.day:
+                        return True
+    
+        return False
 
     def __liberar_animal(self, registro, estrito: bool = True) -> None:
         """Devolve o animal ao estado DISPONIVEL e sincroniza com o banco."""
@@ -82,6 +94,13 @@ class RegistroRepository:
             if isinstance(registro, Adocao):
                 registro.animal.status = "DEVOLVIDO"
                 registro.animal.status = "DISPONIVEL"
+            elif isinstance(registro, Reserva):
+                # Se o animal da reserva foi adotado, mantém adotado
+                if registro.animal.status == "ADOTADO":
+                    pass
+                elif registro.animal.status == "RESERVADO":
+                    registro.animal.status = "DISPONIVEL"
+
             else:  # Reserva ou Devolucao
                 registro.animal.status = "DISPONIVEL"
         except TransicaoDeEstadoInvalidaError:

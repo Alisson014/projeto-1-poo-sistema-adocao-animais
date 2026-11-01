@@ -1,7 +1,7 @@
 from ..schemas import CachorroCreateSchema, CachorroResponseSchema, CalopsitaCreateSchema, CalopsitaResponseSchema, CoelhoResponseSchema, CoelhoCreateSchema, GatoResponseSchema, GatoCreateSchema, AnimalResponseUnion
 from ...services import AnimalService
 from ..paths import AnimalPath
-from ...domain.exceptions import NaoCadastradoError, JaCadastradoError, TipagemError, ValorForaDoIntervaloError
+from ...domain.exceptions import NaoCadastradoError, JaCadastradoError, TipagemError, ValorForaDoIntervaloError, TransicaoDeEstadoInvalidaError
 
 from fastapi import APIRouter, HTTPException, status
 from typing import Literal
@@ -50,7 +50,7 @@ def create(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail="Erro interno ao processar o cadastro."
+            detail=str(e)
         )
 
 
@@ -102,23 +102,6 @@ def get_all_type_animal(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)
         )
-    except JaCadastradoError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
-    
-    except TipagemError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
-    
-    except ValorForaDoIntervaloError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
 
     except Exception as e:
         raise HTTPException(
@@ -140,23 +123,6 @@ def get_by_id(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)
         )
-    except JaCadastradoError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
-    
-    except TipagemError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
-    
-    except ValorForaDoIntervaloError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
-            detail=str(e)
-        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -171,7 +137,9 @@ def update(
 ):
     try:
         animal_data = payload.model_dump()
-
+        # if animal_data.get("id"):
+        #     animal_data.pop("id")
+        
         animal = animal_service.update(type_animal, animal_data, id)
         
         return animal
@@ -186,13 +154,16 @@ def update(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)
         )
-    
+    except TransicaoDeEstadoInvalidaError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
+            detail=str(e)
+        )
     except TipagemError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)
         )
-    
     except ValorForaDoIntervaloError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 

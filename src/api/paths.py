@@ -55,3 +55,33 @@ class QuarentenaPath:
     coelho = "data/quarentena/q_coelho.json"
     gato = "data/quarentena/q_gato.json"
 
+
+# =========================
+#  Registro
+# =========================
+
+@dataclass(frozen=True)
+class RegistroPath:
+    Path("data/registro").mkdir(parents=True, exist_ok=True)
+    Path("data/registro/adocao").mkdir(parents=True, exist_ok=True)
+    Path("data/registro/devolucao").mkdir(parents=True, exist_ok=True)
+    Path("data/registro/reserva").mkdir(parents=True, exist_ok=True)
+
+    # Arquivos de adocao
+    a_cachorro = "data/registro/adocao/a_cachorro.json"
+    a_calopsita = "data/registro/adocao/a_calopsita.json"
+    a_coelho = "data/registro/adocao/a_coelho.json"
+    a_gato = "data/registro/adocao/a_gato.json"
+
+    # Arquivos de devolucao
+    d_cachorro = "data/registro/devolucao/d_cachorro.json"
+    d_calopsita = "data/registro/devolucao/d_calopsita.json"
+    d_coelho = "data/registro/devolucao/d_coelho.json"
+    d_gato = "data/registro/devolucao/d_gato.json"
+    
+    # Arquivos de reserva
+    r_cachorro = "data/registro/reserva/r_cachorro.json"
+    r_calopsita = "data/registro/reserva/r_calopsita.json"
+    r_coelho = "data/registro/reserva/r_coelho.json"
+    r_gato = "data/registro/reserva/r_gato.json"
+

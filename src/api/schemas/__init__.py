@@ -3,6 +3,7 @@ from .auxiliares_schema import EventoSchame, VacinaSchema
 from .pessoa_schema import AdotanteSchema
 from .politica_schema import PorteXAreaSchema, IdadeMinimaSchema, DuracaoReservaSchema, PesosCompatibilidadeSchema, PoliticaUnion, PoliticaSchema
 from .quarentena_schema import QuarentenaCreateSchema, QuarentenaResponseSchema
+from .registro_schema import AdocaoCreateSchema, AdocaoResponseSchema, DevolucaoCreateSchema, DevolucaoResponseSchema, ReservaCreateSchema, ReservaResponseSchema, RegistroResponseUnion
 
 __all__ = [
     "AnimalCreateSchema",
@@ -25,5 +26,12 @@ __all__ = [
     "PoliticaSchema",
     "PoliticaUnion",
     "QuarentenaCreateSchema",
-    "QuarentenaResponseSchema"
+    "QuarentenaResponseSchema",
+    "AdocaoCreateSchema",
+    "AdocaoResponseSchema",
+    "DevolucaoCreateSchema",
+    "DevolucaoResponseSchema",
+    "ReservaCreateSchema",
+    "ReservaResponseSchema",
+    "RegistroResponseUnion"
 ]
