@@ -1,7 +1,7 @@
 from ..schemas import QuarentenaResponseSchema, QuarentenaCreateSchema
 from ...services import QuarentenaService
 from ..paths import QuarentenaPath, AnimalPath
-from ...domain.exceptions import TipagemError, NaoCadastradoError, JaCadastradoError, NaoEncontradoError
+from ...domain.exceptions import TipagemError, NaoCadastradoError, JaCadastradoError, NaoEncontradoError, AnimalIndisponível
 
 
 from fastapi import APIRouter, HTTPException, status
@@ -34,6 +34,12 @@ def create(
             detail=str(e)
         )
     except JaCadastradoError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
+            detail=str(e)
+        )
+    
+    except AnimalIndisponível as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)
@@ -113,7 +119,9 @@ def update(
 ):
     try:
         quarentena_data = payload.model_dump()
-
+        if quarentena_data.get("id"):
+            quarentena_data.pop("id")
+            
         quarentena = quarentena_service.update(type_animal, quarentena_data, id)
         
         return quarentena
@@ -124,6 +132,12 @@ def update(
             detail=str(e)
         )
     except JaCadastradoError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
+            detail=str(e)
+        )
+
+    except AnimalIndisponível as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, 
             detail=str(e)

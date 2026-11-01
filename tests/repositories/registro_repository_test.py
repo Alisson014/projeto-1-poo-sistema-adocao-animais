@@ -1,5 +1,5 @@
 from src.domain import Adotante, Cachorro, Adocao, Devolucao, Reserva
-from src.repositories import RegistroRepository, PessoaRespository
+from src.repositories import RegistroRepository, PessoaRespository, AnimalRepository
 from src.domain.exceptions import NaoCadastradoError
 from src.repositories.settings_repository import PoliticaRepository
 from src.config import PesosCompatibilidade
@@ -12,11 +12,8 @@ import pytest
 # Garante que a pasta dos arquivos fictícios existe
 Path("tests/data/registro").mkdir(parents=True, exist_ok=True)
 
-cachorro_path = "tests/data/animal/cachorro_teste.json"
-calopsita_path = "tests/data/animal/calopsita_teste.json"
-coelho_path = "tests/data/animal/coelho_teste.json"
-gato_path = "tests/data/animal/gato_teste.json"
-adotante_path = "tests/data/pessoa/adotante_teste.json"
+cachorro_path = "tests/data/registro/cachorro_teste.json"
+adotante_path = "tests/data/registro/adotante_teste.json"
 
 adocao_path = "tests/data/registro/adocao_teste.json"
 devolucao_path = "tests/data/registro/devolucao_teste.json"
@@ -38,11 +35,98 @@ except Exception:
 
 Pesos = politica_repository.get_by_name("PesosCompatibilidade")
 
+# Dados auxiliares
 
-cachorro = Cachorro(
-    id=1,
+cachorro_repo = AnimalRepository(cachorro_path, Cachorro)
+
+cachorro_a = Cachorro(
+    id=cachorro_repo.generate_id(),
     especie="especie",
-    nome="Az",
+    nome="Adocao",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="RESERVADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_a)
+
+cachorro_a_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Adocao",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="RESERVADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_a_del)
+
+cachorro_d = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Devolução",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="ADOTADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_d)
+
+cachorro_d_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Devolução",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="ADOTADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_d_del)
+
+cachorro_r = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Reserva",
     sexo="MACHO",
     idade_meses=1,
     porte="M",
@@ -57,6 +141,29 @@ cachorro = Cachorro(
     raca="Golden",
     passeios_necessarios_dia=1,
 )
+
+cachorro_repo.create(cachorro_r)
+
+cachorro_r_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Reserva",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="DISPONIVEL",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_r_del)
 
 email = f"email{randint(1, 1000000000)}@gmail.com"
 
@@ -81,7 +188,7 @@ adocao_id = adocao_repository.generate_id()
 
 adocao = Adocao(
     id=adocao_id,
-    animal=cachorro,
+    animal=cachorro_a,
     adotante=adotante,
     taxa=10,
     pago=False,
@@ -117,7 +224,7 @@ def test_delete_by_id():
     deleted_id = adocao_repository.generate_id()
     deleted_adocao = Adocao(
         id=deleted_id,
-        animal=cachorro,
+        animal=cachorro_a_del,
         adotante=adotante,
         taxa=10,
         pago=False,
@@ -137,7 +244,7 @@ def test_delete_by_id():
 devolucao_id = devolucao_repository.generate_id()
 
 devolucao = Devolucao(
-    id=devolucao_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
+    id=devolucao_id, animal=cachorro_d, adotante=adotante, motivo="OUTRO", data=datetime.now()
 )
 
 def test_generate_id_devolucao():
@@ -168,7 +275,7 @@ def test_update_devolucao():
 def test_delete_by_id_devolucao():
     deleted_id = devolucao_repository.generate_id()
     deleted_devolucao = Devolucao(
-        id=deleted_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
+        id=deleted_id, animal=cachorro_d_del, adotante=adotante, motivo="OUTRO", data=datetime.now()
     )
 
     devolucao_repository.create(deleted_devolucao, Pesos)
@@ -185,7 +292,7 @@ reserva_id = reserva_repository.generate_id()
 
 reserva = Reserva(
     id=reserva_id,
-    animal=cachorro,
+    animal=cachorro_r,
     adotante=adotante,
     data_inicial=datetime.now(),
     data_expiracao= datetime.now() + timedelta(days=15),
@@ -223,7 +330,7 @@ def test_delete_by_id_reserva():
     
     deleted_reserva = Reserva(
         id=deleted_id,
-        animal=cachorro,
+        animal=cachorro_r_del,
         adotante=adotante,
         data_inicial=datetime.now(),
         data_expiracao=datetime.now(),

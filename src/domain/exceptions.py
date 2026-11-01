@@ -67,6 +67,12 @@ class JaCadastradoError(Exception):
 class PoliticaError(Exception):
     def __init__(self, name:str):
         super().__init__(f"Erro de Política: {name}")
+        self.name = name
+
+class AnimalIndisponível(Exception):
+    def __init__(self, acao:str):
+        super().__init__(f"Animal indisponível para {acao}")
+        self.acao = acao
 
 # Define explicitamente o que é exportado
 __all__ = [
