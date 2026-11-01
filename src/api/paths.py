@@ -5,13 +5,15 @@ from pathlib import Path
 # Utilizado para impedir que os atributos destas classes sejam alterados
 # Impedindo alteração dos caminhos em execução
 
+# Garante que a pasta exista
+# Path("data/pasta").mkdir(parents=True, exist_ok=True)
+
 # =========================
 #  Animal
 # =========================
 
 @dataclass(frozen=True)
 class AnimalPath:
-    # Garante que a pasta exista
     Path("data/animal").mkdir(parents=True, exist_ok=True)
 
     cachorro = "data/animal/cachorro.json"
@@ -26,7 +28,6 @@ class AnimalPath:
 
 @dataclass(frozen=True)
 class PessoaPath:
-    # Garante que a pasta exista
     Path("data/pessoa").mkdir(parents=True, exist_ok=True)
 
     adotante = "data/pessoa/adotante.json"
@@ -85,3 +86,17 @@ class RegistroPath:
     r_coelho = "data/registro/reserva/r_coelho.json"
     r_gato = "data/registro/reserva/r_gato.json"
 
+
+# =========================
+#  Registro
+# =========================
+
+@dataclass(frozen=True)
+class RelatorioPath:
+    Path("data/relatorio").mkdir(parents=True, exist_ok=True)
+
+    taxa_adocao_especies = "data/relatorio/taxa_adocao_especies.json"
+    taxa_adocao_porte = "data/relatorio/taxa_adocao_porte.json"
+    taxa_devolucoes = "data/relatorio/taxa_devolucoes.json"
+    taxa_tempo_medio_entrada_adocao = "data/relatorio/taxa_tempo_medio_entrada_adocao.json"
+    top5_mais_adotaveis = "data/relatorio/top5_mais_adotaveis.json"

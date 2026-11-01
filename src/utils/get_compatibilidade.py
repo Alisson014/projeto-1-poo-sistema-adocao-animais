@@ -26,6 +26,9 @@ def get_compatibilidade_porte(animal:Animal, adotante: Adotante):
     return matriz_compatibilidade.get(key, 50)
 
 def get_compatibilidade_experiencia_temperamento(animal: Animal, adotante:Adotante):
+    if not animal.temperamento:
+        return 50.0
+
     matriz_compatibilidade = {
         (Temperamento.ARISCO.value, Experiencia.AVANCADO.value): 100.0,
         (Temperamento.ARISCO.value, Experiencia.INTERMEDIARIO.value): 70.0,
@@ -66,6 +69,9 @@ def get_compatibilidade_criancas_temperamento(animal:Animal, adotante:Adotante):
 
     if not adotante.possui_criancas:
         return 100.0
+
+    if not animal.temperamento:
+        return 50.0
     
     matriz_compatibilidade = {
         Temperamento.DOCIL.value: 100.0,
