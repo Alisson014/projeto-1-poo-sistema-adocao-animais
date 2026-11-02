@@ -36,11 +36,13 @@ Também realizei as alterações sugeridas nos repositories de relatório.
 Dessa forma, gere a versão finas dos services e de seus testes.
 """
 
+# Realizei posterior edição do código para alinhamento à API
 
-from ..domain import Top5MaisAdotaveis
+from ..domain import Top5MaisAdotaveis, Adocao, Adotante, Devolucao
+from ..utils import build_animal
 from ..repositories import Top5MaisAdotaveisRepository
 from ..domain import TaxaAdocaoPorte, TaxaAdocaoEspecies, TaxaTempoMedioEntradaAdocao
-from ..repositories import TaxaAdocaoRepository
+from ..repositories import TaxaAdocaoRepository, PoliticaRepository
 from ..domain import TaxaDevolucoes
 from ..repositories import TaxaDevolucoesRepository
 
@@ -54,19 +56,35 @@ class Top5MaisAdotaveisService:
 
     Attributes:
         repository (Top5MaisAdotaveisRepository): Repository do relatório Top5MaisAdotaveis
+        politica_repository (PoliticaRepository): Repository de Política para buscas os pesos de compatibilidade
     """
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, path_politica:str):
         self.repository = Top5MaisAdotaveisRepository(path)
+        self.politica_repository = PoliticaRepository(path_politica)
 
     def create(self, relatorio_data: dict):
         # O top5 é sempre calculado por gerar(), então nunca é recebido de fora.
         # Passá-lo explicitamente evita o uso da lista padrão mutável do model
-        relatorio_data = {**relatorio_data, "top5": []}
+        # relatorio_data = {**relatorio_data, "top5": []}
+
+        animais = []
+        for animal in relatorio_data["animais"]:
+            animais.append( build_animal(animal) )
+
+        relatorio_data["animais"] = list(animais)
+
+        adotantes = []
+
+        for adotante in relatorio_data["adotantes"]:
+            adotantes.append(Adotante.from_dict(adotante))
+
+        relatorio_data["adotantes"] = list(adotantes)
 
         # Instancia classe model
         # As exceções de validação são lançadas pela classe model
         relatorio = Top5MaisAdotaveis(**relatorio_data, id=self.repository.generate_id())
+        relatorio.pesos_compatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
 
         # O método gerar() é invocado dentro do repository
         self.repository.create(relatorio)
@@ -85,8 +103,10 @@ class Top5MaisAdotaveisService:
         # Atualiza apenas os atributos informados
         # Como há validação na classe, as exceptions serão disparadas pela classe.
         for key, value in relatorio_data.items():
-            if hasattr(updated_relatorio, key) and key != "id":
+            if hasattr(updated_relatorio, key) and key != "id" and key != "animais" and key != "adotantes" and key != "top5":
                 setattr(updated_relatorio, key, value)
+
+        updated_relatorio.pesos_compatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
 
         # gerar() acrescenta animais ao top5, então o top5 anterior é descartado
         # para que o relatório seja recalculado do zero
@@ -121,6 +141,17 @@ class TaxaAdocaoService:
         self.repository = TaxaAdocaoRepository(path, class_name)
 
     def create(self, relatorio_data: dict):
+        adocoes = []
+        for adocao in relatorio_data["adocoes"]:
+
+            adocao["animal"] = build_animal( adocao["animal"] )
+
+            adocao["adotante"] = Adotante.from_dict(adocao["adotante"])
+
+            adocoes.append( Adocao.from_dict(adocao) )
+
+        relatorio_data["adocoes"] = list(adocoes)
+
         # Instancia classe model
         # As exceções de validação são lançadas pela classe model
         relatorio = self.model(**relatorio_data, id=self.repository.generate_id())
@@ -142,7 +173,9 @@ class TaxaAdocaoService:
         # Atualiza apenas os atributos informados
         # Como há validação na classe, as exceptions serão disparadas pela classe.
         for key, value in relatorio_data.items():
-            if hasattr(updated_relatorio, key) and key != "id":
+            # Não atualiza dados externos para garantir congruência com o estado 
+            # em que o relatório foi gerado
+            if hasattr(updated_relatorio, key) and key != "id" and key != "adocoes" and key != "taxas" and key != "tempo_medio_meses":
                 setattr(updated_relatorio, key, value)
 
         # O método gerar() é invocado dentro do repository
@@ -172,6 +205,26 @@ class TaxaDevolucoesService:
         self.repository = TaxaDevolucoesRepository(path)
 
     def create(self, relatorio_data: dict):
+        adocoes = []
+        for adocao in relatorio_data["adocoes"]:
+            adocao["animal"] = build_animal( adocao["animal"] )
+
+            adocao["adotante"] = Adotante.from_dict(adocao["adotante"])
+
+            adocoes.append( Adocao.from_dict(adocao) )
+
+        relatorio_data["adocoes"] = list(adocoes)
+        
+        devolucoes = []
+        for devolucao in relatorio_data["devolucoes"]:
+            devolucao["animal"] = build_animal( devolucao["animal"] )
+
+            devolucao["adotante"] = Adotante.from_dict(devolucao["adotante"])
+
+            devolucoes.append( Devolucao.from_dict(devolucao) )
+
+        relatorio_data["devolucoes"] = list(devolucoes)
+
         # Instancia classe model
         # As exceções de validação são lançadas pela classe model
         relatorio = TaxaDevolucoes(**relatorio_data, id=self.repository.generate_id())
@@ -193,7 +246,7 @@ class TaxaDevolucoesService:
         # Atualiza apenas os atributos informados
         # Como há validação na classe, as exceptions serão disparadas pela classe.
         for key, value in relatorio_data.items():
-            if hasattr(updated_relatorio, key) and key != "id":
+            if hasattr(updated_relatorio, key) and key != "id" and key != "adocoes" and key != "devolucoes" and key != "taxa":
                 setattr(updated_relatorio, key, value)
 
         # O método gerar() é invocado dentro do repository

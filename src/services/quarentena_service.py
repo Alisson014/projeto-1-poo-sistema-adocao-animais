@@ -2,7 +2,7 @@ from ..domain import Animal, Cachorro, Calopsita, Coelho, Gato, Quarentena
 from ..repositories import QuarentenaRepository
 
 from typing import Literal
-
+from datetime import datetime
 
 class QuarentenaService:
     """Classe para modelar os serviços referentes ao domínio de quarentena
@@ -50,6 +50,11 @@ class QuarentenaService:
         # As exceções de validação são lançadas pela classe model
         quarentena:Quarentena = Quarentena(**quarentena_data, id=repo.generate_id())
 
+        # Garante a data final se a quarentena foi cumprida
+        if quarentena.status == "CUMPRIDA":
+            if quarentena_data.get("data_final") is None:
+                quarentena.data_final = datetime.now()
+
         repo.create(quarentena)
 
         return quarentena
@@ -80,6 +85,11 @@ class QuarentenaService:
         for key, value in updated_data.items():
             if hasattr(updated_quarentena, key) and key != "id" and key != "animal":
                 setattr(updated_quarentena, key, value)
+
+        # Garante a data final se a quarentena foi cumprida
+        if updated_quarentena.status == "CUMPRIDA":
+            if updated_data.get("data_final") is None:
+                updated_quarentena.data_final = datetime.now()
 
         repo.update(updated_quarentena)
         return updated_quarentena

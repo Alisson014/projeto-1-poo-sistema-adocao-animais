@@ -1,4 +1,5 @@
 from src.domain.enums import StatusReserva, MotivoDevolucao
+from src.domain.mixins import VacinavelMixin
 from src.domain.models.animal import Animal
 from src.domain.models.pessoa import Adotante
 from src.domain.exceptions import TipagemError
@@ -135,12 +136,12 @@ class Adocao(Registro):
         id: int,
         animal: Animal,
         adotante: Adotante,
-        taxa: float,
+        taxa: float | None = None,
         pago: bool,
         data: datetime,
     ):
         super().__init__(id=id, animal=animal, adotante=adotante)
-        self.taxa: float = taxa
+        self.taxa: float = self.calcular_taxa() if taxa is None else taxa
         self.pago: bool = pago
         self.data: datetime = datetime.fromisoformat(data) if isinstance(data, str) else data
 
@@ -156,9 +157,34 @@ class Adocao(Registro):
             "data": self.data.__str__(),
         }
 
-    def calcular_taxa(self):
+    def calcular_taxa(self) -> float:
         """Método para calcular a taxa de uma adoção"""
-        #### Precisa de métricas de políticas para ser implementado
+        taxa = 0
+
+        # Animais idosos (acima de 6 anos) são isentos de taxa
+        # Para estimular adoção
+        if self.animal.idade_meses > 6*12:
+            return taxa
+
+        # Filhotes tem mais custos e são mais procurados
+        if self.animal.idade_meses < 12:
+            if isinstance(self.animal, VacinavelMixin):
+                taxa += 10 * len(self.animal.vacinas)
+            if self.animal.cuidado_especial:
+                taxa += 10
+
+        # Adultos possuem apenas a taxa do porte
+        match self.animal.porte:
+            case "P":
+                taxa += 10
+            case "M":
+                taxa += 15
+            case "G":
+                taxa += 20
+
+        return taxa
+
+        
 
     def gerar_contrato(self) -> str:
         """Retorna o contrato da adoção"""

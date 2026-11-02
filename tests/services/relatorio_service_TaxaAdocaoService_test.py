@@ -5,6 +5,29 @@
 Disponível no arquivo de service referente a este domínio
 """
 
+# Declaro utilização de IA para adequação às alterações realizadas durante 
+# a codificação da API de Relatorio
+# IA utilizada: Claude
+# Prompt: 
+"""
+Estou desenvolvendo um sistema de gerenciamento de adoção de animais em python para a avaliação 
+da disciplina de POO da minha graduação em engenharia de software. O sistema está organizado 
+em models, repositories, services e, por fim, api.
+
+Realizei alterações no arquivo service do domínio de relatórios para corrigir bugs que 
+foram percebidos na excução da api de relatórios. Dessa forma, preciso que as alterações realizadas 
+sejam refletidas nos testes unitários de cada service. 
+
+Dessa forma, sua tarefa é, com base nos arquivos auxiliares que enviarei em anexo, adequar os testes 
+unitários à versão atual dos services.
+
+Em anexo, enviarei os arquivos relacionados (testes, services, repositories)
+"""
+
+# Testes posteriormente adequados à versão atual do service:
+# - create recebe dicts (formato da API) e não mais objetos de domínio
+# - update ignora dados externos (adocoes, taxas, tempo_medio_meses)
+
 from src.domain import Cachorro, Adotante, Adocao
 from src.domain import TaxaAdocaoPorte, TaxaAdocaoEspecies, TaxaTempoMedioEntradaAdocao
 from src.services import TaxaAdocaoService
@@ -47,16 +70,24 @@ adotante = Adotante(
     area_util=80.0,
 )
 
-def nova_adocao(id: int) -> Adocao:
+def nova_adocao(id: int) -> dict:
+    # O service recebe a adoção como dict (formato enviado pela API).
     # Entrada do animal em 10/01/2025 -> adoção de 1 mês
-    return Adocao(
+    # Sempre gera um dict novo, pois o service modifica o dict recebido
+    cachorro = novo_cachorro(id)
+    res = Adocao(
         id=id,
-        animal=novo_cachorro(id),
+        animal=cachorro,
         adotante=adotante,
         taxa=100.0,
         pago=True,
         data=datetime(2025, 2, 10),
-    )
+    ).to_dict()
+
+    res["animal"] = cachorro.to_dict()
+    res["adotante"] = adotante.to_dict()
+
+    return res
 
 def novo_relatorio_data(qtd_adocoes: int = 2) -> dict:
     return {
@@ -79,6 +110,13 @@ resultados_gerados = {
     "TaxaTempoMedioEntradaAdocao": lambda r: r.tempo_medio_meses == 1,
 }
 
+# Atributos calculados de cada subclasse, que o update deve ignorar
+atributos_calculados = {
+    "TaxaAdocaoPorte": {"taxas": {"M": "0/0"}},
+    "TaxaAdocaoEspecies": {"taxas": {"Cachorro": "0/0"}},
+    "TaxaTempoMedioEntradaAdocao": {"tempo_medio_meses": 99},
+}
+
 tipos = pytest.mark.parametrize("tipo", list(services.keys()))
 
 
@@ -94,6 +132,11 @@ def test_create(tipo):
 
     assert type(relatorio).__name__ == tipo
     assert relatorio.id == 1
+    assert len(relatorio.adocoes) == 2
+    # Os dicts recebidos são convertidos em objetos de domínio
+    assert type(relatorio.adocoes[0]).__name__ == "Adocao"
+    assert type(relatorio.adocoes[0].animal).__name__ == "Cachorro"
+    assert type(relatorio.adocoes[0].adotante).__name__ == "Adotante"
     assert resultados_gerados[tipo](relatorio)
 
 @tipos
@@ -119,19 +162,38 @@ def test_get_by_id_error_nao_cadastrado(tipo):
 
 @tipos
 def test_update(tipo):
-    updated_relatorio_data = {
-        "nome": "Nome atualizado",
-        "adocoes": [nova_adocao(1), nova_adocao(2), nova_adocao(3)],
-    }
+    updated_relatorio_data = {"nome": "Nome atualizado"}
 
     res = services[tipo].update(updated_relatorio_data, 1)
 
     assert type(res).__name__ == tipo
     assert res.nome == "Nome atualizado"
-    assert len(res.adocoes) == 3
+    # Os dados externos permanecem os do momento da geração
+    assert len(res.adocoes) == 2
+    assert resultados_gerados[tipo](res)
 
     # Verifica a persistência da atualização
-    assert len(services[tipo].get_by_id(1).adocoes) == 3
+    persistido = services[tipo].get_by_id(1)
+    assert persistido.nome == "Nome atualizado"
+    assert len(persistido.adocoes) == 2
+
+@tipos
+def test_update_ignora_dados_externos(tipo):
+    # adocoes e os atributos calculados não podem ser alterados pelo update
+    updated_relatorio_data = {
+        "adocoes": [nova_adocao(1), nova_adocao(2), nova_adocao(3)],
+        **atributos_calculados[tipo],
+    }
+
+    res = services[tipo].update(updated_relatorio_data, 1)
+
+    assert len(res.adocoes) == 2
+    assert resultados_gerados[tipo](res)
+
+    # Verifica que nada foi alterado no que foi persistido
+    persistido = services[tipo].get_by_id(1)
+    assert len(persistido.adocoes) == 2
+    assert resultados_gerados[tipo](persistido)
 
 @tipos
 def test_update_ignora_id(tipo):

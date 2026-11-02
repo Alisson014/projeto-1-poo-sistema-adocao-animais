@@ -6,9 +6,10 @@
 Continuação do chat utilizado em relatorio_service.py
 """
 
-
+from ..config import DuracaoReserva, PesosCompatibilidade
 from ..domain import FilaEspera, Animal
 from ..repositories import FilaEsperaRepository
+from ..repositories import PoliticaRepository
 
 
 class FilaEsperaService:
@@ -24,30 +25,38 @@ class FilaEsperaService:
         adotante_repository (PessoaRespository): Repository dos adotantes
     """
 
-    def __init__(self, path: str, animal_class: type[Animal], animal_path: str, adotante_path: str):
+    def __init__(self, path: str, animal_class: type[Animal], animal_path: str, adotante_path: str, politica_path):
         self.repository = FilaEsperaRepository(path, animal_class, animal_path, adotante_path)
         self.animal_repository = self.repository.animal_repository
         self.adotante_repository = self.repository.adotante_repository
+        self.politica_repository = PoliticaRepository(politica_path)
 
     def create(self, animal_id: int):
         # Levanta NaoCadastradoError se o animal não existir
         animal = self.animal_repository.get_by_id(int(animal_id))
 
+        pesos: PesosCompatibilidade = self.politica_repository.get_by_name("PesosCompatibilidade")
+        duracao_reserva: DuracaoReserva = self.politica_repository.get_by_name("DuracaoReserva")
+
         # Toda fila de espera é criada vazia
-        fila = FilaEspera(animal=animal)
+        fila = FilaEspera(animal=animal, pesos=pesos, duracao_reserva=duracao_reserva.duracao_dias)
 
         self.repository.create(fila)
 
         return fila
 
     def get_all(self):
-        return self.repository.get_all()
+        pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
+        return self.repository.get_all(pesos)
 
     def get_by_animal_id(self, animal_id: int):
-        return self.repository.get_by_animal_id(animal_id)
+        pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
+        return self.repository.get_by_animal_id(animal_id, pesos)
 
     def add_adotante(self, animal_id: int, adotante_email: str):
-        fila: FilaEspera = self.repository.get_by_animal_id(animal_id)
+        pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
+
+        fila: FilaEspera = self.repository.get_by_animal_id(animal_id, pesos)
 
         # Levanta NaoCadastradoError se o adotante não existir
         adotante = self.adotante_repository.get_by_email(adotante_email)
@@ -59,7 +68,9 @@ class FilaEsperaService:
         return fila
 
     def remove_adotante(self, animal_id: int, adotante_email: str):
-        fila: FilaEspera = self.repository.get_by_animal_id(animal_id)
+        pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
+
+        fila: FilaEspera = self.repository.get_by_animal_id(animal_id, pesos)
 
         adotante = self.adotante_repository.get_by_email(adotante_email)
 
@@ -70,7 +81,9 @@ class FilaEsperaService:
         return fila
 
     def proximo(self, animal_id: int):
-        fila: FilaEspera = self.repository.get_by_animal_id(animal_id)
+        pesos = self.politica_repository.get_by_name("PesosCompatibilidade")
+        
+        fila: FilaEspera = self.repository.get_by_animal_id(animal_id, pesos)
 
         # Retorna None se a fila estiver vazia
         return fila.proximo()

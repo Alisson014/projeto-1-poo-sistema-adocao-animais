@@ -264,7 +264,8 @@ class Animal:
             StatusAnimal.DISPONIVEL.value: [
                 StatusAnimal.RESERVADO.value,
                 StatusAnimal.INADOTAVEL.value,
-                StatusAnimal.DISPONIVEL.value
+                StatusAnimal.DISPONIVEL.value,
+                StatusAnimal.QUARENTENA.value
             ],
             StatusAnimal.RESERVADO.value: [
                 StatusAnimal.ADOTADO.value,

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from ..domain import Pessoa, Adotante
-from ..domain.exceptions import NaoCadastradoError
+from ..domain.exceptions import NaoCadastradoError, JaCadastradoError
 
 
 class PessoaRespository:
@@ -31,7 +31,7 @@ class PessoaRespository:
         pessoas:dict = self.__get_data()
         # Verifica se o email já não está cadastrado
         if pessoas.get(pessoa.email):
-            raise Exception(f"O email {pessoa.email} já está cadastrado no sistema")
+            raise JaCadastradoError(pessoa.email, self.path.__str__())
         
         with self.path.open('w', encoding='utf-8') as file:
             pessoas[pessoa.email] = pessoa.to_dict()
