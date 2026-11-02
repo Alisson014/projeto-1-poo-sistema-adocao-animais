@@ -145,3 +145,27 @@ Utilizei IA generativa para geração de códigos em relação aos services de R
 ---
 
 <br>
+
+## 9. Utilização de `utils` aa invés de `Strategy`
+
+### Motivo:
+Tempo disponível insuficiente para contemplar o prazo para a entrega final
+
+### Implicações:
+Renomeei a pasta `Strategy` para `utils`, de modo que eu apenas criarei funções utilitárias para o sistema. Cada função terá seu próprio arquivo, para evitar acoplamento excessivo em um único módulo com várias funções diferentes.
+
+---
+
+<br>
+
+## 10. FilaEspera não altera estado de Animal
+
+### Motivo:
+Preocupação com a disponibilidade de tempo restante para finalizar o projeto dentro do prazo.
+
+### Implicações:
+A validação temporal referente à EntradaFila expirar e a ordenação via nível de compatibilidade foram implementados, no entanto, o estado do animal considerado não é alterado, nem são criadas reservas automaticamente a partir de uma entrada. Em um contexto real, essa lógica deveria ser seguida pelo servico front-end que consumiria esta aplicação ou realizar uma adição futura.
+
+---
+
+<br>

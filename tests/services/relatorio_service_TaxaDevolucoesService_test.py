@@ -5,6 +5,18 @@
 Disponível no arquivo de service referente a este domínio
 """
 
+# Declaro utilização de IA para adequação às alterações realizadas durante 
+# a codificação da API de Relatorio
+# IA utilizada: Claude
+# Prompt: 
+"""
+Gerado com o mesmo prompt dos testes de TaxaAdocaoService
+"""
+
+# Testes posteriormente adequados à versão atual do service:
+# - create recebe dicts (formato da API) e não mais objetos de domínio
+# - update ignora dados externos (adocoes, devolucoes, taxa)
+
 from src.domain import Cachorro, Adotante, Adocao, Devolucao
 from src.services import TaxaDevolucoesService
 from src.domain.exceptions import NaoCadastradoError
@@ -46,24 +58,42 @@ adotante = Adotante(
     area_util=80.0,
 )
 
-def nova_adocao(id: int) -> Adocao:
-    return Adocao(
+# O service recebe adoções e devoluções como dicts (formato enviado pela API).
+# Sempre gera um dict novo, pois o service modifica o dict recebido
+def nova_adocao(id: int) -> dict:
+    # O service recebe a adoção como dict (formato enviado pela API).
+    # Entrada do animal em 10/01/2025 -> adoção de 1 mês
+    # Sempre gera um dict novo, pois o service modifica o dict recebido
+    cachorro = novo_cachorro(id)
+    res = Adocao(
         id=id,
-        animal=novo_cachorro(id),
+        animal=cachorro,
         adotante=adotante,
         taxa=100.0,
         pago=True,
         data=datetime(2025, 2, 10),
-    )
+    ).to_dict()
 
-def nova_devolucao(id: int) -> Devolucao:
-    return Devolucao(
+    res["animal"] = cachorro.to_dict()
+    res["adotante"] = adotante.to_dict()
+
+    return res
+
+def nova_devolucao(id: int) -> dict:
+    cachorro = novo_cachorro(id)
+
+    res = Devolucao(
         id=id,
-        animal=novo_cachorro(id),
+        animal=cachorro,
         adotante=adotante,
         motivo="COMPORTAMENTO",
         data=datetime(2025, 3, 10),
-    )
+    ).to_dict()
+
+    res["animal"] = cachorro.to_dict()
+    res["adotante"] = adotante.to_dict()
+
+    return res
 
 def novo_relatorio_data() -> dict:
     # 1 devolução para 2 adoções -> taxa de 50%
@@ -87,6 +117,13 @@ def test_create():
 
     assert type(relatorio).__name__ == "TaxaDevolucoes"
     assert relatorio.id == 1
+    assert len(relatorio.adocoes) == 2
+    assert len(relatorio.devolucoes) == 1
+    # Os dicts recebidos são convertidos em objetos de domínio
+    assert type(relatorio.adocoes[0]).__name__ == "Adocao"
+    assert type(relatorio.devolucoes[0]).__name__ == "Devolucao"
+    assert type(relatorio.devolucoes[0].animal).__name__ == "Cachorro"
+    assert type(relatorio.devolucoes[0].adotante).__name__ == "Adotante"
     assert relatorio.taxa == "50.00%"
 
 def test_get_all():
@@ -109,23 +146,42 @@ def test_get_by_id_error_nao_cadastrado():
         relatorio_service.get_by_id(9999)
 
 def test_update():
-    updated_relatorio_data = {
-        "nome": "Nome atualizado",
-        "devolucoes": [nova_devolucao(1), nova_devolucao(2)],
-    }
+    updated_relatorio_data = {"nome": "Nome atualizado"}
 
     res = relatorio_service.update(updated_relatorio_data, 1)
 
     assert type(res).__name__ == "TaxaDevolucoes"
     assert res.nome == "Nome atualizado"
-    assert len(res.devolucoes) == 2
-    # A taxa é recalculada: 2 devoluções para 2 adoções
-    assert res.taxa == "100.00%"
+    # Os dados externos permanecem os do momento da geração
+    assert len(res.adocoes) == 2
+    assert len(res.devolucoes) == 1
+    assert res.taxa == "50.00%"
 
     # Verifica a persistência da atualização
     persistido = relatorio_service.get_by_id(1)
-    assert len(persistido.devolucoes) == 2
-    assert persistido.taxa == "100.00%"
+    assert persistido.nome == "Nome atualizado"
+    assert len(persistido.devolucoes) == 1
+    assert persistido.taxa == "50.00%"
+
+def test_update_ignora_dados_externos():
+    # adocoes, devolucoes e taxa não podem ser alterados pelo update
+    updated_relatorio_data = {
+        "adocoes": [nova_adocao(1), nova_adocao(2), nova_adocao(3)],
+        "devolucoes": [nova_devolucao(1), nova_devolucao(2)],
+        "taxa": "100.00%",
+    }
+
+    res = relatorio_service.update(updated_relatorio_data, 1)
+
+    assert len(res.adocoes) == 2
+    assert len(res.devolucoes) == 1
+    assert res.taxa == "50.00%"
+
+    # Verifica que nada foi alterado no que foi persistido
+    persistido = relatorio_service.get_by_id(1)
+    assert len(persistido.adocoes) == 2
+    assert len(persistido.devolucoes) == 1
+    assert persistido.taxa == "50.00%"
 
 def test_update_ignora_id():
     res = relatorio_service.update({"id": 9999}, 1)
@@ -148,7 +204,7 @@ def test_delete_by_id_error_nao_cadastrado():
     with pytest.raises(NaoCadastradoError):
         relatorio_service.delete_by_id(9999)
 
-# Será utilizado apenas na versão final da aplciação
+# Será utilizado apenas na versão final da aplicação
 # Deve ser o último teste do arquivo, pois limpa o banco de dados
 # def test_delete_all():
 #     relatorio_service.delete_all()

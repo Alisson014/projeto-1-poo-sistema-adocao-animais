@@ -23,7 +23,7 @@ class PoliticaService:
             "PorteXArea": PorteXArea,
         }
 
-    def create(self, politica_name: Literal["IdadeMinima", "DuracaoReserva", "PesosCompatibilidade", "PorteXArea"], politica_data:dict):
+    def create(self, politica_name: Literal["IdadeMinima", "DuracaoReserva", "PesosCompatibilidade", "PorteXArea"], politica_data:dict) -> Politica:
         model = self.class_initializer[politica_name]
 
         # As validações são feitas no escopo da classe model
@@ -43,7 +43,7 @@ class PoliticaService:
         updated_politica = self.repository.get_by_name(politica_name)
 
         for key, value in politica_data.items():
-            if hasattr(updated_politica, key) and key:
+            if hasattr(updated_politica, key) and key is not None:
                 setattr(updated_politica, key, value)
 
         self.repository.update(updated_politica)

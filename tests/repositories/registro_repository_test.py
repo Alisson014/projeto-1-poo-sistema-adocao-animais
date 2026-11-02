@@ -1,21 +1,19 @@
-from src.domain import Adotante, Cachorro, Animal, Adocao, Devolucao, Reserva
-from src.domain.models import Quarentena
-from src.repositories import RegistroRepository, PessoaRespository
+from src.domain import Adotante, Cachorro, Adocao, Devolucao, Reserva
+from src.repositories import RegistroRepository, PessoaRespository, AnimalRepository
 from src.domain.exceptions import NaoCadastradoError
+from src.repositories.settings_repository import PoliticaRepository
+from src.config import PesosCompatibilidade
 
 from random import randint
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import pytest
 
 # Garante que a pasta dos arquivos fictícios existe
 Path("tests/data/registro").mkdir(parents=True, exist_ok=True)
 
-cachorro_path = "tests/data/animal/cachorro_teste.json"
-calopsita_path = "tests/data/animal/calopsita_teste.json"
-coelho_path = "tests/data/animal/coelho_teste.json"
-gato_path = "tests/data/animal/gato_teste.json"
-adotante_path = "tests/data/pessoa/adotante_teste.json"
+cachorro_path = "tests/data/registro/cachorro_teste.json"
+adotante_path = "tests/data/registro/adotante_teste.json"
 
 adocao_path = "tests/data/registro/adocao_teste.json"
 devolucao_path = "tests/data/registro/devolucao_teste.json"
@@ -25,11 +23,110 @@ adocao_repository = RegistroRepository(adocao_path, Adocao, cachorro_path, Cacho
 devolucao_repository = RegistroRepository(devolucao_path, Devolucao, cachorro_path, Cachorro, adotante_path)
 reserva_repository = RegistroRepository(reserva_path, Reserva, cachorro_path, Cachorro, adotante_path)
 
+politica_repository = PoliticaRepository("tests/data/settings.json")
 
-cachorro = Cachorro(
-    id=1,
+try: 
+    pesos_compatibilidade = PesosCompatibilidade(nome="pesos compatibilidade", data_modificacao=datetime.now(), peso_porte_moradia=0.2, peso_experiencia_temperamento=0.3, peso_tempo_livre_energia=0.2, peso_criancas_temperamento=0.3)
+    # Garante 
+    politica_repository.create(pesos_compatibilidade)
+except Exception:
+    # Ignora caso ocorra o erro de política já cadastrada
+    pass
+
+Pesos = politica_repository.get_by_name("PesosCompatibilidade")
+
+# Dados auxiliares
+
+cachorro_repo = AnimalRepository(cachorro_path, Cachorro)
+
+cachorro_a = Cachorro(
+    id=cachorro_repo.generate_id(),
     especie="especie",
-    nome="Az",
+    nome="Adocao",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="RESERVADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_a)
+
+cachorro_a_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Adocao",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="RESERVADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_a_del)
+
+cachorro_d = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Devolução",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="ADOTADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_d)
+
+cachorro_d_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Devolução",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="ADOTADO",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_d_del)
+
+cachorro_r = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Reserva",
     sexo="MACHO",
     idade_meses=1,
     porte="M",
@@ -44,6 +141,29 @@ cachorro = Cachorro(
     raca="Golden",
     passeios_necessarios_dia=1,
 )
+
+cachorro_repo.create(cachorro_r)
+
+cachorro_r_del = Cachorro(
+    id=cachorro_repo.generate_id(),
+    especie="especie",
+    nome="Reserva",
+    sexo="MACHO",
+    idade_meses=1,
+    porte="M",
+    status="DISPONIVEL",
+    energia="HIPERATIVO",
+    cuidado_especial=False,
+    data_entrada=datetime.now(),
+    historico=[],
+    temperamento=["DOCIL"],
+    nivel_adestramento=1,
+    vacinas=[],
+    raca="Golden",
+    passeios_necessarios_dia=1,
+)
+
+cachorro_repo.create(cachorro_r_del)
 
 email = f"email{randint(1, 1000000000)}@gmail.com"
 
@@ -68,7 +188,7 @@ adocao_id = adocao_repository.generate_id()
 
 adocao = Adocao(
     id=adocao_id,
-    animal=cachorro,
+    animal=cachorro_a,
     adotante=adotante,
     taxa=10,
     pago=False,
@@ -79,7 +199,7 @@ def test_generate_id_adocao():
     assert adocao.id == adocao_id
 
 def test_create_adocao():
-    assert adocao_repository.create(adocao)
+    assert adocao_repository.create(adocao, Pesos)
 
 def test_get_all_adocao():
     adocoes = adocao_repository.get_all()
@@ -104,14 +224,14 @@ def test_delete_by_id():
     deleted_id = adocao_repository.generate_id()
     deleted_adocao = Adocao(
         id=deleted_id,
-        animal=cachorro,
+        animal=cachorro_a_del,
         adotante=adotante,
         taxa=10,
         pago=False,
         data=datetime.now(),
     )
 
-    adocao_repository.create(deleted_adocao)
+    adocao_repository.create(deleted_adocao, Pesos)
 
     adocao_repository.delete_by_id(deleted_id)
 
@@ -124,14 +244,14 @@ def test_delete_by_id():
 devolucao_id = devolucao_repository.generate_id()
 
 devolucao = Devolucao(
-    id=devolucao_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
+    id=devolucao_id, animal=cachorro_d, adotante=adotante, motivo="OUTRO", data=datetime.now()
 )
 
 def test_generate_id_devolucao():
     assert devolucao.id == devolucao_id
 
 def test_create_devolucao():
-    assert devolucao_repository.create(devolucao)
+    assert devolucao_repository.create(devolucao, Pesos)
 
 def test_get_all_devolucao():
     devolucoes = devolucao_repository.get_all()
@@ -155,10 +275,10 @@ def test_update_devolucao():
 def test_delete_by_id_devolucao():
     deleted_id = devolucao_repository.generate_id()
     deleted_devolucao = Devolucao(
-        id=deleted_id, animal=cachorro, adotante=adotante, motivo="OUTRO", data=datetime.now()
+        id=deleted_id, animal=cachorro_d_del, adotante=adotante, motivo="OUTRO", data=datetime.now()
     )
 
-    devolucao_repository.create(deleted_devolucao)
+    devolucao_repository.create(deleted_devolucao, Pesos)
 
     devolucao_repository.delete_by_id(deleted_id)
 
@@ -172,10 +292,10 @@ reserva_id = reserva_repository.generate_id()
 
 reserva = Reserva(
     id=reserva_id,
-    animal=cachorro,
+    animal=cachorro_r,
     adotante=adotante,
     data_inicial=datetime.now(),
-    data_expiracao=datetime.now(),
+    data_expiracao= datetime.now() + timedelta(days=15),
     status="ATIVA",
     compatibilidade=100,
 )
@@ -184,7 +304,7 @@ def test_generate_id_reserva():
     assert reserva.id == reserva_id
 
 def test_create_reserva():
-    assert reserva_repository.create(reserva)
+    assert reserva_repository.create(reserva, Pesos)
 
 def test_get_all_reserva():
     devolucoes = reserva_repository.get_all()
@@ -210,7 +330,7 @@ def test_delete_by_id_reserva():
     
     deleted_reserva = Reserva(
         id=deleted_id,
-        animal=cachorro,
+        animal=cachorro_r_del,
         adotante=adotante,
         data_inicial=datetime.now(),
         data_expiracao=datetime.now(),
@@ -218,7 +338,7 @@ def test_delete_by_id_reserva():
         compatibilidade=100,
     )
 
-    reserva_repository.create(deleted_reserva)
+    reserva_repository.create(deleted_reserva, Pesos)
 
     reserva_repository.delete_by_id(deleted_id)
 

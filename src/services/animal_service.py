@@ -70,7 +70,7 @@ class AnimalService:
         # A regra de negócio do status é implementada via setter
         # Como há validação na classe, as exceptions serão disparadas pela classe.
         for key, value in animal_data.items():
-            if hasattr(updated_animal, key) and key != "id" and key != "vacinas" and key != "historico":
+            if hasattr(updated_animal, key) and key != "id" and key != "vacinas" and key != "historico" and key is not None:
                 setattr(updated_animal, key, value)
 
         if animal_data.get("vacinas") is not None:

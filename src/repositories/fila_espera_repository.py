@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
+from datetime import datetime
 
+from ..config import PesosCompatibilidade
 from ..domain import FilaEspera, EntradaFila, Adotante
 from ..domain.exceptions import NaoCadastradoError
 from .animal_repository import AnimalRepository
@@ -35,11 +37,10 @@ class FilaEsperaRepository:
         if filas.get(str(fila_espera.animal.id)):
             raise Exception(f"({fila_espera.animal.__str__()}) já possui uma fila de espera")
 
-        try:
-            self.animal_repository.get_by_id(fila_espera.animal.id)
-        except NaoCadastradoError:
-            raise Exception(f"({fila_espera.animal.__str__()}) não cadastrado no banco")
-
+        # Garante que o animal existe no banco
+        # Levanta um NaoCadastradoError se não existir
+        self.animal_repository.get_by_id(fila_espera.animal.id)
+        
         filas[str(fila_espera.animal.id)] = fila_espera.to_dict()
 
         with self.path.open('w', encoding='utf-8') as file:
@@ -47,7 +48,7 @@ class FilaEsperaRepository:
         
         return True
 
-    def get_all(self):
+    def get_all(self, pesos:PesosCompatibilidade):
         filas = self.__get_data()
 
         if not filas:
@@ -55,20 +56,20 @@ class FilaEsperaRepository:
 
         res = []
 
-        try:
-            for i in filas.keys():
-                fila = self.get_by_animal_id(i)
+        for i in filas.keys():
+            try:
+                fila = self.get_by_animal_id(i, pesos)
 
                 # Só é adicionada à saída se for válida
                 res.append(fila)
-        except NaoCadastradoError:
-            # Ignora os erros lançados por remoçam de filas
-            pass
+            except NaoCadastradoError:
+                # Ignora os erros lançados por remoçam de filas
+                pass
 
         return res
         
 
-    def get_by_animal_id(self, animal_id):
+    def get_by_animal_id(self, animal_id, pesos: PesosCompatibilidade):
         filas = self.__get_data()
 
         if not filas.get(str(animal_id)):
@@ -81,10 +82,27 @@ class FilaEsperaRepository:
         for en in fila["fila"]:
             try:
                 en["adotante"] = self.adotante_repository.get_by_email(en["adotante"])
+                
+                entrada = EntradaFila(**en)
+                now = datetime.now()
+                expirada = False
 
+                if entrada.data_expiracao.year < now.year:
+                    expirada = True
+                elif entrada.data_expiracao.year == now.year:
+                    if entrada.data_expiracao.month < now.month:
+                        expirada = True
+                    elif entrada.data_expiracao.month == now.month:
+                        if entrada.data_expiracao.day < now.day:
+                            expirada = True
+
+                if expirada:
+                    raise NaoCadastradoError(f"Entrada - {repr(entrada)}", self.path.__str__())    
+                
                 # Apenas entradas com adotante existente são consideradas
                 # As demais são limpas por não serem salvas
-                entradas.append(EntradaFila.from_dict(en))
+                
+                entradas.append(entrada)
             except NaoCadastradoError:
                 need_update = True
 
@@ -98,7 +116,7 @@ class FilaEsperaRepository:
             self.delete_by_animal_id(animal_id)
             raise NaoCadastradoError(f"FilaEspera removida por questões de integridade({animal_id})", self.path.__str__())
 
-        res = FilaEspera.from_dict(fila)
+        res = FilaEspera(**fila, pesos=pesos)
 
         # Espelha a limpeza dos dados no banco
         if need_update:

@@ -38,7 +38,7 @@ cachorro = Cachorro(
 )
 
 quarentena = Quarentena(
-    id= quarentena_cacho_id, animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
+    id= quarentena_cacho_id, animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="CUMPRIDA"
 )
 
 quarentena_service = QuarentenaService(
@@ -92,7 +92,7 @@ def test_update_all_keys():
     
 def test_delete_by_id():
     del_quarentena = Quarentena(
-        id=1, animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="ATIVA"
+        id=quarentena_cachorro_repository.generate_id(), animal=cachorro, data_inicial=datetime.now(), motivo="OUTRO", status="CUMPRIDA"
     )
 
     data = del_quarentena.to_dict()

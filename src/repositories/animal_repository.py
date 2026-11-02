@@ -1,6 +1,6 @@
 import json
 from ..domain import Animal, Cachorro, Calopsita, Coelho, Gato, Evento, Vacina
-from ..domain.exceptions import NaoCadastradoError
+from ..domain.exceptions import NaoCadastradoError, JaCadastradoError
 
 from pathlib import Path
 
@@ -31,7 +31,7 @@ class AnimalRepository:
         animais: dict = self.__get_data()
         # As chaves no json são strings, é preciso converter o id para str
         if animais.get(str(animal.id)):
-            raise Exception(f"O id {animal.id} já está reservado para um animal")
+            raise JaCadastradoError(animal.id, self.path.__str__())
         
         with self.path.open("w", encoding="utf-8") as file:
 

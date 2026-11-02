@@ -132,7 +132,7 @@ class Adotante(Pessoa):
 
     # __tempo_livre_min: possui getter e setter para garantir alinhamento à tipagem
     @property
-    def tempo_livre_min(self) -> str:
+    def tempo_livre_min(self) -> int:
         return self.__tempo_livre_min
 
     @tempo_livre_min.setter

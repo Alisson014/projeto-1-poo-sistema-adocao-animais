@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal
 
 from ..config import IdadeMinima, DuracaoReserva, PesosCompatibilidade, PorteXArea
-from ..domain.exceptions import NaoCadastradoError
+from ..domain.exceptions import NaoCadastradoError, JaCadastradoError
 
 class PoliticaRepository:
     """Classe para manipulação de arquivos json referentes ao domínio de Politica
@@ -29,7 +29,7 @@ class PoliticaRepository:
         politicas = self.__get_data()
 
         if politicas.get(type(politica).__name__):
-            raise Exception(f"politica de {type(politica).__name__} já cadastrada")
+            raise JaCadastradoError(type(politica).__name__, self.path.__str__())
 
         with self.path.open('w', encoding='utf-8') as file:
             politicas[type(politica).__name__] = politica.to_dict()

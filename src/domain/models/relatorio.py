@@ -3,28 +3,11 @@ from src.domain.models.pessoa import Adotante
 from src.domain.models.registro import Adocao, Devolucao
 from src.domain.enums import Porte
 from src.domain.exceptions import RelatorioNaoGeradoError
+from src.config import PesosCompatibilidade
+from src.utils import get_compatibilidade, adocao_serializer, devolucao_serializer
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-
-def adocao_serializer(adocao:Adocao):
-    return {
-        "id": adocao.id,
-        "animal": adocao.animal.to_dict(),
-        "adotante": adocao.adotante.to_dict(),
-        "taxa": adocao.taxa,
-        "pago": adocao.pago,
-        "data": adocao.data.__str__()
-    }
-
-def devolucao_serializer(adocao:Devolucao):
-    return {
-        "id": adocao.id,
-        "animal": adocao.animal.to_dict(),
-        "adotante": adocao.adotante.to_dict(),
-        "motivo": adocao.motivo,
-        "data": adocao.data.__str__()
-    }
 
 def get_dict_list(array: list):
     """Método auxiliar que retorna uma lista de dicionários de uma lista de objetos"""
@@ -81,6 +64,7 @@ class Top5MaisAdotaveis(Relatorio):
         animais (List[Animal]): Lista de animais considerada no momento da criação.
         adotantes (List[Adotante]): Lista de adotantes considerada no momento da criação.
         top5 (List[Animal]): Lista dos 5 animais mais adotáveis.
+        pesos_compatibilidade (PesosCompatibilidade): Os pesos utilizados no cálculo de compatibilidade
     """
 
     def __init__(
@@ -91,31 +75,74 @@ class Top5MaisAdotaveis(Relatorio):
         nome: str,
         animais: list[Animal],
         adotantes: list[Adotante],
-        top5: list[Animal]=None
+        top5: list[Animal] | None = None,
+        pesos_compatibilidade: PesosCompatibilidade | None = None
     ):
         super().__init__(id=id, data=data, nome=nome)
         self.animais = animais
         self.adotantes = adotantes
         self.top5: list[Animal] = top5 if top5 is not None else []
+        self.pesos_compatibilidade = pesos_compatibilidade
 
     @classmethod
     def from_dict(cls, relatorio:dict):
         return cls(**relatorio)
 
     def gerar(self):
-        """Gera uma lista com os dicionários contendo os 5 animais mais adotáveis ordenados pela média de compatibilidade"""
-        # Só pode ser desenvolvido quando eu definir o cálculo de compatibilidade
-        # Por hora, esta classe é apenas simulada
-        # Considerando os primeiros 5 animais
+        """Gera uma lista contendo os 5 animais mais adotáveis ordenados pela média de compatibilidade"""
+        if self.pesos_compatibilidade is None:
+            raise Exception("Não há pesos para fazer a verificação")
+
         self.top5 = []
-        for i in self.animais:
-            self.top5.append(i)
-            if len(self.top5) >= 5:
+
+        if not self.adotantes or not self.animais:
+            return self.top5
+
+        # Como a compatibilidade de um animal jamais será negativa
+        # O -1 é utilizado como controle
+        hank:list[tuple[float, Animal | None]] = [ 
+            (-1, None ),
+            (-1, None ),
+            (-1, None ),
+            (-1, None ),
+            (-1, None )
+        ]
+        
+        for animal in self.animais:
+            # Cálculo da compatibilidade média
+            comp_media = 0
+            for adotante in self.adotantes:
+                comp_media += get_compatibilidade(animal, adotante, self.pesos_compatibilidade)
+            
+            comp_media /= len(self.adotantes)
+
+
+            # Inserção no hank
+            must_insert = False
+            for i, (compat, ani_hank) in enumerate(hank):
+                if comp_media > compat:
+                    must_insert = True
+                elif comp_media == compat:
+                    if animal.idade_meses < ani_hank.idade_meses:
+                        must_insert = True
+
+                if must_insert:
+                    hank.insert(i, ( comp_media, animal) )
+                    hank.pop(-1)
+                    break
+                        
+        # Adicionando os mais compatíveis ao top5
+        for i, (compat, animal) in enumerate(hank):
+            if compat == -1: # Garante que, caso não haja 5 animais, as compatibilidades inválidas não entram
                 break
 
+            self.top5.append(animal)
+
+        return self.top5
+            
     def exportar(self):
         """Retorna um relatório estruturado como dicionário"""
-        if not self.top5:
+        if self.top5 is None:
             raise RelatorioNaoGeradoError()
 
         # Retorna um dicionário com as informações
