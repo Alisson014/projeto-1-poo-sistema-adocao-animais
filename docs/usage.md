@@ -25,7 +25,8 @@ Os demais métodos são intuitivos e seguem o mesmo padrão do que foi apresenta
 ## 🐶Animal:
 ![Endpoints de Animal](./images/animal.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 Atenção, nenhum animal é cadastrado com eventos ou vacinas. Tentar isso levantará uma exceção.
 
@@ -122,23 +123,28 @@ Abaixo estão exemplos de como fornecer o Request Body para cada tipo de animal:
 
 <br>
 
-> [!NOTE] GET - Get All Type Animal
+> [!NOTE]
+> GET - Get All Type Animal
 
 Apenas selecione o tipo de animal e execute
 
-> [!CAUTION] DELETE - Delete All Type Animal
+> [!CAUTION]
+> DELETE - Delete All Type Animal
 
 Apenas selecione o tipo de animal e execute
 
-> [!NOTE] GET - Get All
+> [!NOTE]
+> GET - Get All
 
 Apenas executa
 
-> [!NOTE] GET - Get By Id
+> [!NOTE]
+> GET - Get By Id
 
 Informe o tipo do animal e o id buscado
 
-> [!WARNING] PUT - Update
+> [!WARNING]
+> PUT - Update
 
 Informe o tipo do animal, o id e o Request Body (mesmo padrão que o Create)
 
@@ -165,7 +171,8 @@ Eventos e vacinas são adicionados aqui
 }
 ```
 
-> [!CAUTION] DELETE - Delete By Id
+> [!CAUTION]
+> DELETE - Delete By Id
 
 Apenas informe o tipo do animal e o id
 
@@ -176,7 +183,8 @@ Apenas informe o tipo do animal e o id
 ## ⚖️Politica
 ![Endpoints de Politica](./images/politica.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 Selecione o tipo de política e informe o Request Body
 
@@ -229,7 +237,8 @@ Deixar políticas não preenchidas poderá causar problemas à aplicação
 }
 ```
 
-> [!WARNING] PUT - Update
+> [!WARNING]
+> PUT - Update
 
 Informe o tipo de política e o request body (igual ao reques body do Create)
 
@@ -240,7 +249,8 @@ Informe o tipo de política e o request body (igual ao reques body do Create)
 ## 👤Pessoa
 ![Endpoints de Pessoa](./images/pessoa.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 Exemplo presente na própria página /docs
 
@@ -251,7 +261,8 @@ Exemplo presente na própria página /docs
 ## 🔒Quarentena
 ![Endpoints de Pessoa](./images/pessoa.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 Exemplo presente na própria página /docs
 
@@ -264,7 +275,8 @@ Forneça o animal correspondente ao tipo, ou isso levantará uma exceção
 ## 📃Registro
 ![Endpoints de Registro](./images/registro.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 ### Adocao
 ```
@@ -384,7 +396,8 @@ Forneça o animal correspondente ao tipo, ou isso levantará uma exceção
 ## 📔Relatorio:
 ![Endpoints de Relatorio](./images/relatorio.png)
 
-> [!TIP] POST - Create
+> [!TIP]
+> POST - Create
 
 ### Top5MaisAdotaveis:
 
@@ -509,7 +522,8 @@ Preencha a lista de adocoes e de devolucoes executando o get all type de registr
 }
 ```
 
-> [!WARNING] PUT - Update
+> [!WARNING]
+> PUT - Update
 
 Dados externos ou gerados pelo próprio relatório não são atualizados, para manter a integridado quanto ao estado da aplicação em que o relatório foi gerado. (Os dados são passados no Request Body, mas não são considerados na hora de atualizar)
 
