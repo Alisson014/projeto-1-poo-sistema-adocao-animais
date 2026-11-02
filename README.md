@@ -99,8 +99,8 @@ Mais detalhes sobre a utilização dos endpoints em:
 Para iniciar a base de dados da aplicação com um estado inicial preenchido
 
 ```bash
-# Comando para rodar o arquivo seed
-# Ainda não implementado
+# Execute na raiz da aplicação
+python -m data.seed
 ```
 
 ---
