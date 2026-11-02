@@ -7,12 +7,12 @@
 ## 📌 Sumário:
 - [Descrição do projeto](#ℹ️-descrição-do-projeto)
 - [Objetivo](#-objetivo-do-projeto)
-- [Como começar - Não documentado ainda](#-como-começar)
+- [Como começar](#-como-começar)
 - [Estrutura do projeto](#️-estrutura-do-projeto)
 - [Classes planejadas](#-classes-planejadas)
 - [Decisões de design](#-decisões-de-design)
-- [Funcionalidades - Não documentado ainda](#-funcionalidades)
-- [Cobertura dos testes - Não documentado ainda](#-cobertura-dos-testes)
+- [Funcionalidades](#-funcionalidades)
+- [Cobertura dos testes](#-cobertura-dos-testes)
 
 ---
 
@@ -28,6 +28,7 @@ O projeto consiste no desenvolvimento de um sistema de adoção de animais basea
 3. `JSON`;
 4. `pytest`;
 5. `mypy`;
+5. `pydantic`;
 
 ---
 
@@ -44,8 +45,62 @@ O objetivo deste projeto é aplicar os conhecimentos adquiridos ao longo da cade
 
 ## 💻 Como começar:
 
+### 📚Repositório
+
+Clone o repositório e instale as dependências
+
+```bash
+# Via ssh
+git clone git@github.com:Alisson014/projeto-1-poo-sistema-adocao-animais.git
 ```
-Será documentado posteriormente
+```bash
+# Via http
+git clone https://github.com/Alisson014/projeto-1-poo-sistema-adocao-animais.git
+```
+
+### 📦Instalando dependências
+
+Certifique-se de estar acessando a pasta raiz do repositório
+
+```bash
+pip install -r requirements.txt
+
+# Dependencias de desenvolvimento
+pip install -r requirements-dev.txt
+```
+
+### ⚡Rodando o projeto:
+
+Certifique-se de estar na raiz da pasta
+
+Via execução do arquivo de entrada, `main.py`
+
+```bash
+python main.py
+```
+
+Via terminal com Uvicorn
+```bash
+uvicorn main:app --reload
+```
+
+### 🛠️Testando endpoints:
+
+> [!NOTE]
+> Após iniciar a aplicação   
+> Acesse http://127.0.0.1:8000/docs para interação visual
+
+Mais detalhes sobre a utilização dos endpoints em:
+
+**[Guia de uso com exemplos:](/docs/usage.md)**
+
+### Preenchendo base de dados
+
+Para iniciar a base de dados da aplicação com um estado inicial preenchido
+
+```bash
+# Comando para rodar o arquivo seed
+# Ainda não implementado
 ```
 
 ---
@@ -59,14 +114,33 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
 ```text
 📂 projeto-1-poo-sistema-adocao-animais
  ├── 📂 Data
- │    ├── database.db
  │    ├── seed.py
  │    ├── settings.json
  ├── 📂 Docs
  │    ├── decisoes-de-design.md
  │    ├── uml.md
+ │    ├── uml-relations.md
  ├── 📂 src
  |    ├── 📂 api
+ |    |    ├── 📂 routes
+ |    |    |    ├── animal_route.py
+ |    |    |    ├── fila_espera_route.py
+ |    |    |    ├── pessoa_route.py
+ |    |    |    ├── politica_route.py
+ |    |    |    ├── quarentena_route.py
+ |    |    |    ├── registro_route.py
+ |    |    |    ├── relatorio_route.py
+ |    |    ├── 📂 schemas
+ |    |    |    ├── animal_schema.py
+ |    |    |    ├── auxiliares_schema.py
+ |    |    |    ├── fila_espera_schema.py
+ |    |    |    ├── pessoa_schema.py
+ |    |    |    ├── politica_schema.py
+ |    |    |    ├── quarentena_schema.py
+ |    |    |    ├── registro_schema.py
+ |    |    |    ├── relatorio_schema.py
+ |    |    |    ├── __init__.py 
+ |    |    ├── paths.py 
  |    ├── 📂 config
  |    |    ├── __init__.py 
  |    |    ├── settings.py 
@@ -97,10 +171,23 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  |    |    ├── relatorio_repository.py
  |    |    ├── settings_repository.py
  |    ├── 📂 services
- |    ├── 📂 strategies
+ |    |    ├── __init__.py
+ |    |    ├── animal_service.py
+ |    |    ├── fila_espera_service.py
+ |    |    ├── pessoa_service.py
+ |    |    ├── quarentena_service.py
+ |    |    ├── registro_service.py
+ |    |    ├── relatorio_service.py
+ |    |    ├── settings_service.py
+ |    ├── 📂 utils
+ |    |    ├── __init__.py
+ |    |    ├── adocao_serializer.py
+ |    |    ├── build_animal.py
+ |    |    ├── devolucao_serializer.py
+ |    |    ├── get_compatibilidade.py
  ├── 📂 tests
  |    ├── conftest.py
- |    ├── 📂 repositories
+ |    ├── 📂 data
  |    |    ├── settings.json
  |    |    ├── __init__.py
  |    |    ├── 📂 animal
@@ -120,16 +207,29 @@ A estrutura adotado visa alinhar padrões de mercado aos requisitos do projeto, 
  |    |    |    ├── relatorio_test.py
  |    ├── 📂 repositories
  |    |    ├── __init__.py
- |    |    ├── animal_repository.py
- |    |    ├── fila_espera_repository.py
- |    |    ├── pessoa_repository.py
- |    |    ├── quarentena_repository.py
- |    |    ├── registro_repository.py
- |    |    ├── relatorio_repository.py
- |    |    ├── settings_repository.py
+ |    |    ├── animal_repository_test.py
+ |    |    ├── zfila_espera_repository_test.py
+ |    |    ├── pessoa_repository_test.py
+ |    |    ├── quarentena_repository_test.py
+ |    |    ├── registro_repository_test.py
+ |    |    ├── relatorio_repository_test.py
+ |    |    ├── settings_repository_test.py
+ |    ├── 📂 services
+ |    |    ├── __init__.py
+ |    |    ├── animal_service_test.py
+ |    |    ├── fila_espera_service_test.py
+ |    |    ├── pessoa_service_test.py
+ |    |    ├── quarentena_service_test.py
+ |    |    ├── registro_service_test.py
+ |    |    ├── relatorio_service_TaxaAdocaoService_test.py
+ |    |    ├── relatorio_service_TaxaDevolucoesService_test.py
+ |    |    ├── relatorio_service_Top5MaisAdotaveisService_test.py
+ |    |    ├── settings_service_test.py
  ├── .gitignore
- ├── main.py  
+ ├── main.py
+ ├── pytest.ini
  ├── README.md
+ ├── requirements-dev.txt
  ├── requirements.txt
 ```
 ---
@@ -220,9 +320,31 @@ As decisões de design tomadas ao longo do projeto visam alinhar tanto a experi�
 <br>
 
 ## 🎮 Funcionalidades:
+```text
+Seguindo a lógica dos endpoints da aplicação
 ```
-Será documentado posteriormente
-```
+
+O projeto implementa uma api via FastAPI, onde os endpoints foram baseados nas entidades de domínio da aplicação. Além disso, cada entidade possui seu arquivo de rotas e de schemas relacionados. Os schemas foram implementados com a utilização da biblioteca `pydantic` e visão realizar uma validação prévia sobre os dados enviados nas requisições, as quais são complementadas com as validações realizadas ao longo do fluxo `api -> service (+model) -> repository(+model)`.
+
+> [!TIP]
+> Ao todo, existem 7 entidades de domínio.   
+> Totalizando `51` + a rota default endpoints
+
+Cada uma das entidades de domínio possui as 4 operações de CRUD, mais endpoints adicionais relacionados as especificidades das entidades.
+
+### Endpoints conforme entidades:
+![Imagem de todos os endpoints](/docs/images/all_endpoints.png)
+
+### Rotas por entidade:
+|    Entidade     |  endpoints  |
+| --------------  | ----------- |
+| `Animal`        |  ![Endpoints de Animal](/docs/images/animal.png) |  
+| `Politica`      |  ![Endpoints de Politica](/docs/images/politica.png) |  
+| `Pessoa`        |  ![Endpoints de Pessoa](/docs/images/pessoa.png) |  
+| `Quarentena`    |  ![Endpoints de Quarentena](/docs/images/quarentena.png) |  
+| `Registro`      |  ![Endpoints de Registro](/docs/images/registro.png) |  
+| `Relatorio`     |  ![Endpoints de Relatorio](/docs/images/relatorio.png) |  
+| `Fila Espera`   |  ![Endpoints de Fila Espera](/docs/images/fila_espera.png) |  
 
 ---
 
@@ -235,11 +357,21 @@ A estrutura de pastas dos testes segue a estrutura de src
 ```
 Testes unitários visando questões chave como criação de instâncias (casos de sucesso e falha) e reatividade à mudanças de propriedades. Também devem ser verificadas as exceções lançados em casos de verificação de falha.
 
+> [!TIP]
+> Contagem de testes atual: `376`
+
 Para os testes envolvendo persistência de dados, arquivos json são criados na pasta `tests/data`
 
-Contagem de testes atual: `225`
+**Testes implementados em:**
+- Models
+- Repositories
+- Services
 
 ### Em resumo:
 - `Testes unitários`, `casos de sucesso (intancia)`, `casos de falha (instancia)`, `reaatividade à mudanças`
 
-Testes gerados com auxílio de ia generativa foram devidamente declarados em seus respectivos arquivos.
+<br>
+
+> [!NOTE]
+> Testes gerados com auxílio de ia generativa foram devidamente declarados em seus respectivos arquivos.   
+> Conforme a decisão de design **8**, códigos gerados com auxílio de ia também foram devidamente declarados.

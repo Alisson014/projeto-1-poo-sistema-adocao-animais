@@ -148,7 +148,8 @@ classDiagram
     %% Classes
     class EntradaFila {
         + adotante: Adotante;
-        + tempo_espera: int;
+        + data_inicial: datetime;
+        + data_expiracao: datetime;
         + compatibilidade: float;
         + from_dict(entrada: dict);
         + to_dict();
@@ -156,6 +157,8 @@ classDiagram
 
     class FilaEspera {
         + animal: Animal;
+        + duracao_reserva: int;
+        + pesos: PesosCompatibilidade;
         + fila: List[EntradaFila];
         + add(adotante: Adotante) -> None;
         + remove(adotante: Adotante) -> None;
@@ -196,7 +199,7 @@ classDiagram
         + taxa: float;
         + pago: bool;
         + data: datetime;
-        + calcular_taxa() -> None;
+        + calcular_taxa() -> float;
         + gerar_contrato() -> str;
         + registrar_pagamento() -> None;
         + from_dict(registro: dict);
@@ -256,6 +259,7 @@ classDiagram
         + animais: List[Animal];
         + adotantes: List[Adotante];
         + top5: List[Animal];
+        + pesos_compatibilidade: PesosCompatibilidade;
         + from_dict(relatorio: dict);
     }
 
@@ -337,6 +341,7 @@ classDiagram
         + peso_experiencia_temperamento: float;
         + peso_tempo_livre_energia: float;
         + peso_criancas_temperamento: float;
+        + validar_pesos(pesos: list);
         + validar();
         + to_dict();
         + from_dict(politica: dict);
