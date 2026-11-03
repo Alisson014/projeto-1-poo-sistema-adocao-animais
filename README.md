@@ -58,6 +58,18 @@ git clone git@github.com:Alisson014/projeto-1-poo-sistema-adocao-animais.git
 git clone https://github.com/Alisson014/projeto-1-poo-sistema-adocao-animais.git
 ```
 
+### ⚙️Criando e ativando ambiente virtual
+
+Para evitar conflitos entre as dependências de outros projetos locais em sua máquina
+
+```bash
+# Certifique-se de executar na raiz do projeto
+
+python -m venv .venv
+
+.\.venv\Scripts\Activate.ps1
+```
+
 ### 📦Instalando dependências
 
 Certifique-se de estar acessando a pasta raiz do repositório
@@ -94,7 +106,7 @@ Mais detalhes sobre a utilização dos endpoints em:
 
 **[Guia de uso com exemplos:](/docs/usage.md)**
 
-### Preenchendo base de dados
+### 🌱Preenchendo base de dados
 
 Para iniciar a base de dados da aplicação com um estado inicial preenchido
 
